@@ -85,7 +85,7 @@
         android:background="@drawable/bg_dotted_line"
         android:layerType="software" />
 
-    <com.wangeditor.android.RichEditor
+    <com.wangeditor.android.RichWangEditor
         android:id="@+id/rich_Editor"
         android:layout_width="match_parent"
         android:layout_height="0dp"

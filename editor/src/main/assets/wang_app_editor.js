@@ -4,6 +4,7 @@ var RE = {};
 
 RE.editor = editor;
 
+//容器
 RE.editorContainer = document.getElementById('editor-container');
 
 
@@ -415,6 +416,12 @@ RE.editor.on('change', function () {
         if (textAlign == "right") {
             items.push('justifyRight');
         }
+
+        //判断是否有缩进
+       var indent =  fragment[0].indent
+       if(indent != '2em'){
+          items.push('indent');
+       }
     }
     window.location.href = "re-state://" + encodeURI(items.join(','));
     window.location.href = "re-callback://" + encodeURIComponent(RE.getHtml());

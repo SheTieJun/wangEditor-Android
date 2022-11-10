@@ -32,7 +32,7 @@ object RichUtils {
         var src: String? = null
         while (m.find()) {
             quote = m.group(1)
-            src = if (quote == null || quote.trim { it <= ' ' }.length == 0) m.group(2).split("//s+".toRegex())
+            src = if (quote == null || quote.trim { it <= ' ' }.isEmpty()) m.group(2).split("//s+".toRegex())
                 .toTypedArray()[0] else m.group(2)
             imageSrcList.add(src)
         }

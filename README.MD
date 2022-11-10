@@ -2,11 +2,12 @@
 
 基于[wangEditor](https://github.com/wangeditor-team/wangEditor)在Android实现的富文本功能
 
-> 其中的交互部分可以在iOS上通用
+> 其中的交互部分 wang_app_editor.js 可以在iOS上通用。
 
 > 为什么项目中没有使用原生Span实现，主要原因是标签解析的问题。
+> 原生我也实现了一版，大部分功能都已实现。
  
-> 为什么使用wangEditor， 因为web端使用了改项目进行开发
+> 为什么使用wangEditor， 因为web端使用了wangEditor项目进行开发的。
 
 ## Supported Functions 
 - [X] Bold
@@ -36,14 +37,19 @@
 - [ ] Cursor Color 光标颜色  ，和光标一起的按钮颜色是通过主题修改的
 
 
-## 键盘监听 `initKeyboardChange`，可以自行重写
-默认操作：
+## 键盘监听
+`initKeyboardChange`，可以自行重写使用
+默认实现操作：
 - 打开键盘时滚动到当前选中位置或者上一次选中的位置
 - 关闭键盘时，清除焦点
 
-## 工具栏实现【TODO】
-
+## 工具栏实现
+TODO: 
+- [ ] 动态绑定工具栏
+- [ ] 动态添加工具
+- [ ] 通过接口实现，代理、模板模式
 
 
 ## 参考项目
 - [richeditor-android](https://github.com/wasabeef/richeditor-android)
+- [wangeditor](https://www.wangeditor.com/v5/API.html)

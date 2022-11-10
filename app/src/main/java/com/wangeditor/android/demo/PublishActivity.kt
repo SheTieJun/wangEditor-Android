@@ -13,12 +13,13 @@ import android.view.View.OnClickListener
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.wangeditor.android.RichEditor.OnTextChangeListener
+import com.wangeditor.android.RichWangEditor.OnTextChangeListener
 import com.wangeditor.android.RichUtils
 import com.wangeditor.android.demo.R.id
 import com.wangeditor.android.demo.R.mipmap
 import com.wangeditor.android.demo.databinding.ActivityPublishBinding
 import me.shetj.base.R.color
+import me.shetj.base.ktx.selectFile
 
 class PublishActivity : AppCompatActivity(), OnClickListener {
     var binding: ActivityPublishBinding? = null
@@ -171,14 +172,18 @@ class PublishActivity : AppCompatActivity(), OnClickListener {
                 binding!!.richEditor.setNumbers()
             }
             id.button_image -> {
-                binding!!.richEditor.insertTodo()
                 if (!TextUtils.isEmpty(binding!!.richEditor.html)) {
                     val arrayList = RichUtils.returnImageUrlsFromHtml(
                         binding!!.richEditor.html
                     )
-                    if (arrayList != null && arrayList.size >= 9) {
+                    if (arrayList.size >= 9) {
                         Toast.makeText(this@PublishActivity, "最多添加9张照片~", Toast.LENGTH_SHORT).show()
                         return
+                    }
+                    selectFile {
+                        it?.let {
+                            binding!!.richEditor.insertImage(it.toString(),"图片${arrayList.size}")
+                        }
                     }
                 }
             }

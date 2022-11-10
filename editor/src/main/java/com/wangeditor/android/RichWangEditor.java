@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class RichEditor extends WebView {
+public class RichWangEditor extends WebView {
 
     public String TAG = "RichEditor";
 
@@ -77,16 +77,16 @@ public class RichEditor extends WebView {
     private OnDecorationStateListener mDecorationStateListener;
     private AfterInitialLoadListener mLoadListener;
 
-    public RichEditor(Context context) {
+    public RichWangEditor(Context context) {
         this(context, null);
     }
 
-    public RichEditor(Context context, AttributeSet attrs) {
+    public RichWangEditor(Context context, AttributeSet attrs) {
         this(context, attrs, android.R.attr.webViewStyle);
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    public RichEditor(Context context, AttributeSet attrs, int defStyleAttr) {
+    public RichWangEditor(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         setVerticalScrollBarEnabled(false);
@@ -427,7 +427,7 @@ public class RichEditor extends WebView {
     }
 
     /**
-     * {@link RichEditor#insertImage(String, String)} will show the original size of the image.
+     * {@link RichWangEditor#insertImage(String, String)} will show the original size of the image.
      * So this method can manually process the image by adjusting specific width and height to fit into different mobile screens.
      *
      * @param url
@@ -474,19 +474,16 @@ public class RichEditor extends WebView {
         exec("javascript:RE.blurFocus();");
     }
 
-    private void updateHeight(boolean needFocus) {
+    private void updateHeightByKeyboard() {
         if (isReady) {
             int dp = px2dp(getHeight());
             if (dp == 0) return;
-            setEditorHeight(dp,needFocus);
+            setEditorHeight(dp, true);
         } else {
-            postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    int dp = px2dp(getHeight());
-                    if (dp == 0) return;
-                    setEditorHeight(dp,needFocus);
-                }
+            postDelayed(() -> {
+                int dp = px2dp(getHeight());
+                if (dp == 0) return;
+                setEditorHeight(dp, true);
             }, 100);
         }
     }
@@ -501,7 +498,7 @@ public class RichEditor extends WebView {
             clearFocusEditor();
             return null;
         }, () -> {
-            postDelayed(() -> updateHeight(true),50);
+            postDelayed(() -> updateHeightByKeyboard(),50);
             return null;
         });
     }
