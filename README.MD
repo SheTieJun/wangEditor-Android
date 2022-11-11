@@ -2,7 +2,7 @@
 
 基于[**wangEditor**](https://github.com/wangeditor-team/wangEditor) 在Android实现的富文本功能
 
-> 1.其中的交互部分`wang_app_editor.js`可以在iOS上通用。
+> 1.其中的交互部分`wang_app_editor.js`可以在iOS上通用，就是说iOS可以复制使用相关功能。
 
 > 2.为什么项目中没有使用原生Span实现，主要原因是标签解析的问题。
 > 原生我也实现了一版demo，大部分功能都已实现,发现中间会有很多意外的情况需要进行处理。
@@ -12,10 +12,11 @@
 > 4.`wangEditor`功能很全，但是我只懂皮毛的`js`和`html`，所以我这里只用到**部分**的功能，也有一些功能被我移除了,我用的是`simple`
 
 >mode: 'default' 默认模式 - 集成了`wangEditor`所有功能
+> 
 >mode: 'simple' 简洁模式 - 仅有部分常见功能，但更加简洁易用
 
 > 缺点：`wang_editor_index.js`体积太大，功能内容太多，已我的知识储备无法进行优化简化
-
+>
 > 优化：`wangEditor`功能齐全强大，后续可以功能同步web
 
 ## 支持的功能 Supported Functions 
