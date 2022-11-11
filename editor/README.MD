@@ -1,26 +1,25 @@
 ## 一、WangRichEditor 
- 
 
-### 1. 监听部分
-- addOnTextChangeListener
-- removeTextChangeListener
-- addOnDecorationChangeListener
-- removeDecorationChangeListener
+> Android dp = html px
 
-### 2. Editor API
-- scrollToBottom
+`wang_app_editor.js` 富文本功能js 部分
+
+## API
+### 1. Editor Function API
+
+
 - setEditorBackgroundColor
-- setEditorFontColor
-- setEditorFontSize
+- setEditorCursorColor
 - setEditorHeight
 - setEditorWidth
+- setPadding
+
+
+#### 2. Rich Function API
 
 - setAlignCenter
 - setAlignLeft
 - setAlignRight
-- setBackground
-- setBackground
-- setBackgroundColor
 - setBackgroundResource
 - setBlockquote
 - setBold
@@ -31,10 +30,7 @@
 - setInputEnabled
 - setItalic
 - setNumbers
-- setOnInitialLoadListener
 - setOutdent
-- setPadding
-- setPaddingRelative
 - setParagraph
 - setPlaceholder
 - setStrikeThrough
@@ -45,15 +41,29 @@
 - setUnderline
 - insertAudio
 - insertImage
-- insertImage
+- insertVideo
 - insertLink
 - insertTodo
-- insertVideo
+- insertCode
+
+- removeFormat 
+
 - undo
 - redo
-- removeFormat
+
 - focusEditor
 - clearFocusEditor
+
+#### 3. Extensions API
+
+- initKeyboardChange   
+ 
+
+#### 4. 监听部分
+- addOnTextChangeListener
+- removeTextChangeListener
+- addOnDecorationChangeListener
+- removeDecorationChangeListener
 
 ### 修改默认属性'wang_style.css'
 ```

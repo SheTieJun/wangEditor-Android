@@ -174,14 +174,6 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
         exec("javascript:RE.enable();")
     }
 
-    fun setEditorFontColor(color: Int) {
-        val hex = convertHexColorString(color)
-        exec("javascript:RE.setBaseTextColor('$hex');")
-    }
-
-    fun setEditorFontSize(px: Int) {
-        exec("javascript:RE.setBaseFontSize('" + px + "px');")
-    }
 
     /**
      * html px = androd dp

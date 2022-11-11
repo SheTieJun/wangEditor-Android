@@ -1,6 +1,6 @@
 ## wangEditor-Android
 
-基于[wangEditor](https://github.com/wangeditor-team/wangEditor)在Android实现的富文本功能
+基于[**wangEditor**](https://github.com/wangeditor-team/wangEditor) 在Android实现的富文本功能
 
 > 1.其中的交互部分`wang_app_editor.js`可以在iOS上通用。
 
@@ -14,10 +14,11 @@
 >mode: 'default' 默认模式 - 集成了`wangEditor`所有功能
 >mode: 'simple' 简洁模式 - 仅有部分常见功能，但更加简洁易用
 
-> 缺点：`wang_editor_index.js`体积太大，功能内容太多，已我的知识储备无法进行优化
+> 缺点：`wang_editor_index.js`体积太大，功能内容太多，已我的知识储备无法进行优化简化
+
 > 优化：`wangEditor`功能齐全强大，后续可以功能同步web
 
-## Supported Functions 
+## 支持的功能 Supported Functions 
 - [X] Bold
 - [X] Italic
 - [X] Subscript
@@ -45,6 +46,7 @@
 - [X] Unordered List (Bullets)
 - [X] Ordered List (Numbers)
 - [X] Cursor Color 光标颜色  ，和 Android光标下的小圆点按钮颜色是通过主题修改的
+- [X] removeFormat 清除选中文本的格式，不可以清除heading
 
 
 ## Default Setting for Editor
@@ -55,7 +57,7 @@ editor.setEditorHeight(200);  //dp = html px
 
 ### Font
 ``` 
-editor.setEditorFontSize(22);
+editor.setEditorFontSize(22);  //android dp = html px
 editor.setEditorFontColor(Color.RED);
 ```
 ### Background
@@ -68,13 +70,17 @@ editor.setBackground(url);
 
 ### Padding
 ``` 
-editor.setPadding(10, 10, 10, 10);//dp = html px
+editor.setPadding(10, 10, 10, 10); //android dp = html px
 ```
 
 
 ## 键盘监听
 `initKeyboardChange`，可以自行重写使用
+
+> 主要是为了修复打开键盘的时候，无法自动滚到选中的位置
+
 默认实现操作：
+
 - 打开键盘时滚动到当前选中位置或者上一次选中的位置
 - 关闭键盘时，清除焦点
 
@@ -87,6 +93,8 @@ TODO:
 
 ## 链接项目
 - API参考项目：[richeditor-android](https://github.com/wasabeef/richeditor-android)
+
 - 核心内容：[wangeditor](https://www.wangeditor.com/v5/API.html)
 
-> 如果对你们有帮助就star一下吧
+
+### 如果对你们有帮助就star一下吧
