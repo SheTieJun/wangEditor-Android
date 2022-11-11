@@ -1,4 +1,4 @@
-const { SlateEditor, SlateTransforms, SlateText } = window.wangEditor
+const { SlateEditor, SlateTransforms, SlateText, DomEditor } = window.wangEditor
 
 var RE = {};
 
@@ -6,6 +6,10 @@ RE.editor = editor;
 
 //容器
 RE.editorContainer = document.getElementById('editor-container');
+
+RE.isActive = function (type) {
+    return !!DomEditor.getSelectedNodeByType(editor, type)
+}
 
 
 RE.setHtml = function (contents) {
@@ -30,13 +34,14 @@ RE.getText = function () {
     return RE.editor.getText();
 }
 
-RE.setBaseTextColor = function (color) {
-    RE.editor.style.color = color;
-}
-
-RE.setBaseFontSize = function (size) {
-    RE.editor.style.fontSize = size;
-}
+//展示
+//RE.setBaseTextColor = function (color) {
+//    RE.editor.style.color = color;
+//}
+//
+//RE.setBaseFontSize = function (size) {
+//    RE.editor.style.fontSize = size;
+//}
 
 RE.setPadding = function (left, top, right, bottom) {
     RE.editorContainer.style.paddingLeft = left;
@@ -46,11 +51,15 @@ RE.setPadding = function (left, top, right, bottom) {
 }
 
 RE.setBackgroundColor = function (color) {
-    document.body.style.backgroundColor = color;
+    RE.editorContainer.style.backgroundColor = color;
 }
 
 RE.setBackgroundImage = function (image) {
     RE.editorContainer.style.backgroundImage = image;
+}
+
+RE.setCaretColor = function (color) {
+    RE.editorContainer.style.caretColor = color;
 }
 
 RE.setWidth = function (size) {
@@ -62,33 +71,33 @@ RE.setHeight = function (size) {
 }
 
 // 专门给键盘出来进行高度变化使用的
-RE.setHeight = function (size,focus) {
-    if(focus){
+RE.setHeight = function (size, focus) {
+    if (focus) {
         RE.editor.blur()
     }
     RE.editorContainer.style.height = size;
-    if(focus){
+    if (focus) {
         RE.editor.restoreSelection()
     }
 }
 
-RE.setTextAlign = function (align) {
-    RE.editor.style.textAlign = align;
-}
-
-RE.setVerticalAlign = function (align) {
-    RE.editor.style.verticalAlign = align;
-}
-
-RE.setPlaceholder = function (placeholder) {
-    editorConfig.placeholder = placeholder;
-}
+//RE.setTextAlign = function (align) {
+//    RE.editor.style.textAlign = align;
+//}
+//
+//RE.setVerticalAlign = function (align) {
+//    RE.editor.style.verticalAlign = align;
+//}
+//
+//RE.setPlaceholder = function (placeholder) {
+//    editorConfig.placeholder = placeholder;
+//}
 
 RE.setInputEnabled = function (inputEnabled) {
     if (inputEnabled) {
-        editor.enable()
+        RE.editor.enable()
     } else {
-        editor.disable()
+        RE.editor.disable()
     }
 }
 
@@ -170,6 +179,63 @@ RE.setNumbers = function () {
     })
 }
 
+
+
+RE.setCode = function () {
+    var active = this.isActive('code')
+    if (!active) {
+        var codeS = editor.getSelectionText()
+        // 插入 pre 节点
+        const newPreNode = {
+            type: 'pre',
+            children: [
+                {
+                    type: 'code',
+                    language: 'Java',
+                    children: [
+                        { text: codeS + '\n' }, // 选中节点的纯文本
+                    ],
+                },
+            ],
+        }
+        SlateTransforms.insertNodes(editor, newPreNode, { mode: 'highest' })
+    }
+}
+
+RE.setBlockquote = function () {
+    if (isDisabledBlockquote()) return
+    var active = this.isActive('blockquote')
+    var newType = active ? 'paragraph' : 'blockquote'
+    console.log(newType + '//' + active)
+    SlateTransforms.setNodes(editor, { type: newType })
+}
+
+isDisabledBlockquote = function () {
+    if (editor.selection == null) return true
+
+    const [nodeEntry] = SlateEditor.nodes(editor, {
+        match: n => {
+            const type = DomEditor.getNodeType(n)
+
+            // 只可用于 p 和 blockquote
+            if (type === 'paragraph') return true
+            if (type === 'blockquote') return true
+
+            return false
+        },
+        universal: true,
+        mode: 'highest', // 匹配最高层级
+    })
+
+    // 匹配到 p blockquote ，不禁用
+    if (nodeEntry) {
+        return false
+    }
+    // 未匹配到，则禁用
+    return true
+}
+
+
 RE.setTextColor = function (color) {
     RE.editor.addMark('color', color)
 }
@@ -224,9 +290,6 @@ RE.setJustifyRight = function () {
     })
 }
 
-RE.setBlockquote = function () {
-    document.execCommand('formatBlock', false, '<blockquote>');
-}
 
 RE.insertImage = function (url, alt) {
     RE.reFocus()
@@ -321,19 +384,26 @@ RE.insertHTML = function (html) {
     document.execCommand('insertHTML', false, html);
 }
 
-RE.insertLink = function (url, title) {
+RE.insertLink = function (url, defText) {
+    RE.reFocus()
+    var name = editor.getSelectionText()
+    if (name == "" || name == null) {
+        name = defText
+    }
     var image = {
         type: 'link',
         url: url,
-        target: title,
-        children: [{ text: "title" }]
+        target: "_blank",
+        children: [{ text: name }]
     }
     RE.editor.insertNode(image)
 }
 
 RE.setTodo = function (text) {
-    var html = '<input type="checkbox" name="' + text + '" value="' + text + '"/> &nbsp;';
-    document.execCommand('insertHTML', false, html);
+    var active = !!DomEditor.getSelectedNodeByType(editor, 'todo')
+    SlateTransforms.setNodes(editor, {
+        type: active ? 'paragraph' : 'todo'
+    })
 }
 
 RE.focus = function () {
@@ -351,12 +421,14 @@ RE.reFocus = function () {
     }
 }
 
+//清除选中的格式
 RE.removeFormat = function () {
     document.execCommand('removeFormat', false, null);
 }
 
 
 RE.editor.on('change', function () {
+
     var editStyle = SlateEditor.marks(RE.editor)
     var items = [];
     if (editStyle.bold) {
@@ -378,7 +450,9 @@ RE.editor.on('change', function () {
         items.push('through');
     }
 
+
     const fragment = editor.getFragment()
+
     if (fragment != null) {
         var type = fragment[0].type
         if (type == "header1") {
@@ -399,13 +473,22 @@ RE.editor.on('change', function () {
         if (type == "header6") {
             items.push('H6');
         }
-
         if (type == "list-item" && fragment[0].ordered == true) {
             items.push('orderedList');
         }
         if (type == "list-item" && fragment[0].ordered == false) {
             items.push('unorderedList');
         }
+        if (type == "todo") {
+            items.push('todo');
+        }
+
+        if (type == 'pre' && fragment[0] != null) {
+            if (fragment[0].children[0].type == 'code') {
+                items.push('code');
+            }
+        }
+
         var textAlign = fragment[0].textAlign
         if (textAlign == "center") {
             items.push('justifyCenter');
@@ -416,15 +499,21 @@ RE.editor.on('change', function () {
         if (textAlign == "right") {
             items.push('justifyRight');
         }
+        if (textAlign == "justify") {
+            items.push('justifyFull');
+        }
 
         //判断是否有缩进
-       var indent =  fragment[0].indent
-       if(indent != '2em'){
-          items.push('indent');
-       }
+        var indent = fragment[0].indent
+        if (indent == '2em') {
+            items.push('indent');
+        }
+
     }
     window.location.href = "re-state://" + encodeURI(items.join(','));
     window.location.href = "re-callback://" + encodeURIComponent(RE.getHtml());
+    console.log(editStyle)
+    console.log(fragment)
 })
 
 

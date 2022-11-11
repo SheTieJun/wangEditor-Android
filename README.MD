@@ -2,12 +2,20 @@
 
 基于[wangEditor](https://github.com/wangeditor-team/wangEditor)在Android实现的富文本功能
 
-> 其中的交互部分 wang_app_editor.js 可以在iOS上通用。
+> 1.其中的交互部分`wang_app_editor.js`可以在iOS上通用。
 
-> 为什么项目中没有使用原生Span实现，主要原因是标签解析的问题。
-> 原生我也实现了一版，大部分功能都已实现。
- 
-> 为什么使用wangEditor， 因为web端使用了wangEditor项目进行开发的。
+> 2.为什么项目中没有使用原生Span实现，主要原因是标签解析的问题。
+> 原生我也实现了一版demo，大部分功能都已实现,发现中间会有很多意外的情况需要进行处理。
+
+> 3.为什么使用`wangEditor`， 因为web端使用了`wangEditor`项目进行开发的。
+
+> 4.`wangEditor`功能很全，但是我只懂皮毛的`js`和`html`，所以我这里只用到**部分**的功能，也有一些功能被我移除了,我用的是`simple`
+
+>mode: 'default' 默认模式 - 集成了`wangEditor`所有功能
+>mode: 'simple' 简洁模式 - 仅有部分常见功能，但更加简洁易用
+
+> 缺点：`wang_editor_index.js`体积太大，功能内容太多，已我的知识储备无法进行优化
+> 优化：`wangEditor`功能齐全强大，后续可以功能同步web
 
 ## Supported Functions 
 - [X] Bold
@@ -22,19 +30,46 @@
 - [X] Heading 1、2、3 、4、5、6
 - [X] Undo
 - [X] Redo
-- [ ] Indent
-- [ ] Outdent
+- [X] Indent
+- [X] Outdent
+- [X] Blockquote
+- [X] Code, 如果是设置选择文本使用code，会清除其他格式只保留文本
 - [X] Insert Image
-- [ ] Insert Video
-- [ ] Insert Audio
-- [ ] Insert Link
-- [ ] Checkbox
-- [ ] Text Color
-- [ ] Text Background Color
-- [ ] Text Font Size
+- [X] Insert Video
+- [X] Insert Audio
+- [X] Insert Link
+- [x] Checkbox：【Todo】
+- [X] Text Color
+- [X] Text Background Color
+- [X] Text Font Size
 - [X] Unordered List (Bullets)
 - [X] Ordered List (Numbers)
-- [ ] Cursor Color 光标颜色  ，和光标一起的按钮颜色是通过主题修改的
+- [X] Cursor Color 光标颜色  ，和 Android光标下的小圆点按钮颜色是通过主题修改的
+
+
+## Default Setting for Editor
+### Height
+``` 
+editor.setEditorHeight(200);  //dp = html px
+```
+
+### Font
+``` 
+editor.setEditorFontSize(22);
+editor.setEditorFontColor(Color.RED);
+```
+### Background
+``` 
+editor.setEditorBackgroundColor(Color.BLUE);
+editor.setBackgroundColor(Color.BLUE);
+editor.setBackgroundResource(R.drawable.bg);
+editor.setBackground(url);
+```
+
+### Padding
+``` 
+editor.setPadding(10, 10, 10, 10);//dp = html px
+```
 
 
 ## 键盘监听
@@ -50,6 +85,8 @@ TODO:
 - [ ] 通过接口实现，代理、模板模式
 
 
-## 参考项目
-- [richeditor-android](https://github.com/wasabeef/richeditor-android)
-- [wangeditor](https://www.wangeditor.com/v5/API.html)
+## 链接项目
+- API参考项目：[richeditor-android](https://github.com/wasabeef/richeditor-android)
+- 核心内容：[wangeditor](https://www.wangeditor.com/v5/API.html)
+
+> 如果对你们有帮助就star一下吧

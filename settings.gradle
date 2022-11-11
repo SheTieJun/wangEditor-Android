@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 rootProject.name = "wangEditor-Android"
 include ':app'
 include ':editor'
+include ':editorToolbar'

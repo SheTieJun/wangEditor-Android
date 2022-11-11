@@ -33,7 +33,7 @@
 
         <activity
             android:name=".ShowArtActivity"
-            android:theme="@style/BaseTheme.MD3" />
+            android:theme="@style/Theme.MaterialComponents.DayNight" />
     </application>
 
 </manifest>

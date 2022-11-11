@@ -4,7 +4,7 @@ body {
 
 :root,
 :host {
-  --w-e-textarea-bg-color: #fff;
+  --w-e-textarea-bg-color: transparent;
   --w-e-textarea-color: #333;
   --w-e-textarea-border-color: #ccc;
   --w-e-textarea-slight-border-color: #e8e8e8;
@@ -50,6 +50,7 @@ body {
   -webkit-overflow-scrolling: touch;
   height: 100%
 }
+
 
 .w-e-text-container [data-slate-editor] {
   word-wrap: break-word;
