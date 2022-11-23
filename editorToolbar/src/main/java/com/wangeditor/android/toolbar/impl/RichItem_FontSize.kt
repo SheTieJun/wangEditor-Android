@@ -16,11 +16,11 @@ import com.wangeditor.android.toolbar.IRichItem
  */
 class RichItem_FontSize: IRichItem() {
     override fun getType(): String {
-        return RichType.FONTSIZE.name
+        return RichType.FontSize.name
     }
 
     override fun onClick() {
-        mWangEditor?.setBold()
+        mWangEditor?.setFontSize(18)
     }
 
     override fun buildView(): View {

@@ -1,142 +1,139 @@
-package com.wangeditor.android.demo.util;
+package com.wangeditor.android.demo.util
 
-import androidx.lifecycle.MutableLiveData;
-import com.wangeditor.android.WangRichEditor;
-import java.util.LinkedList;
-import org.jetbrains.annotations.Nullable;
+import androidx.lifecycle.MutableLiveData
+import com.wangeditor.android.WangRichEditor
+import com.wangeditor.android.WangRichEditor.OnTextChangeListener
+import java.util.*
 
-public class UndoRedoHelper {
+
+class UndoRedoHelper(
+    /**
+     * The edit text.
+     */
+    private val editor: WangRichEditor
+) {
     /**
      * Is undo/redo being performed? This member signals if an undo/redo
      * operation is currently being performed. Changes in the text during
      * undo/redo are not recorded because it would mess up the undo history.
      */
-    private boolean mIsUndoOrRedo = false;
+    private var mIsUndoOrRedo = false
 
     /**
      * The edit history.
      */
-    private EditHistory mEditHistory;
+    private val mEditHistory: EditHistory
 
     /**
      * The change listener.
      */
-    private EditTextChangeListener mChangeListener;
-
-    /**
-     * The edit text.
-     */
-    private WangRichEditor editor;
-    private String  defText = "";
-
-    public final MutableLiveData<Boolean> isCanUndo = new MutableLiveData(false);
-    public final MutableLiveData<Boolean> isCanRedo = new MutableLiveData(false);
+    private val mChangeListener: EditTextChangeListener
+    private val defText = ""
+    private var currentText = ""
+    val isCanUndo: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
+    val isCanRedo: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
     // =================================================================== //
-
     /**
      * Create a new TextViewUndoRedo and attach it to the specified TextView.
      *
      * @param editor The text view for which the undo/redo is implemented.
      */
-    public UndoRedoHelper(WangRichEditor editor) {
-        this.editor = editor;
-        mEditHistory = new EditHistory();
-        mChangeListener = new EditTextChangeListener();
-        this.editor.addOnTextChangeListener(mChangeListener);
+    init {
+        mEditHistory = EditHistory()
+        mChangeListener = EditTextChangeListener()
+        editor.addOnTextChangeListener(mChangeListener)
     }
-
 
     /**
      * Set the maximum history size. If size is negative, then history size is
      * only limited by the device memory.
      */
-    public void setMaxHistorySize(int maxHistorySize) {
-        mEditHistory.setMaxHistorySize(maxHistorySize);
+    fun setMaxHistorySize(maxHistorySize: Int) {
+        mEditHistory.setMaxHistorySize(maxHistorySize)
     }
 
     /**
      * Clear history.
      */
-    public void clearHistory() {
-        mEditHistory.clear();
+    fun clearHistory() {
+        mEditHistory.clear()
     }
 
     /**
      * Can undo be performed?
      */
-    public boolean getCanUndo() {
-        return (mEditHistory.mmPosition > 1);
+    fun getCanUndo(): Boolean {
+        return mEditHistory.mmPosition > 1
     }
 
     /**
      * Perform undo.
      */
-    public void undo() {
-        if (mIsUndoOrRedo) return;
-        EditItem edit = mEditHistory.getPrevious();
+    fun undo() {
+        if (mIsUndoOrRedo) return
+        val edit: EditItem? = mEditHistory.getPrevious()
         if (edit == null) {
-            editor.setHtml(defText);
-            return;
+            editor.html = defText
+            return
         }
-        mIsUndoOrRedo = true;
-        editor.setHtml(edit.text);
+        mIsUndoOrRedo = true
+        currentText = edit.text
+        editor.html = edit.text
     }
 
     /**
      * Can redo be performed?
      */
-    public boolean getCanRedo() {
-        return (mEditHistory.mmPosition < mEditHistory.mmHistory.size());
+    fun getCanRedo(): Boolean {
+        return mEditHistory.mmPosition < mEditHistory.mmHistory.size
     }
 
     /**
      * Perform redo.
      */
-    public void redo() {
-        if (mIsUndoOrRedo) return;
-        EditItem edit = mEditHistory.getNext();
-        if (edit == null) {
-            return;
+    fun redo() {
+        if (mIsUndoOrRedo) return
+        val edit: EditItem = mEditHistory.getNext() ?: return
+        mIsUndoOrRedo = true
+        currentText = edit.text
+        editor.html = edit.text
+    }
+
+    fun initDefContent(info: String?) {
+        if (info == null) {
+            mEditHistory.add(EditItem(""))
+            return
         }
-        mIsUndoOrRedo = true;
-        editor.setHtml(edit.text);
+        mEditHistory.add(EditItem(info))
     }
-
-    public void initDefContent(@Nullable String info) {
-        mEditHistory.add(new EditItem(info));
-    }
-
-
     // =================================================================== //
-
     /**
      * Keeps track of all the edit history of a text.
      */
-    private final class EditHistory {
-
+    private inner class EditHistory {
         /**
          * The position from which an EditItem will be retrieved when getNext()
          * is called. If getPrevious() has not been called, this has the same
          * value as mmHistory.size().
          */
-        private int mmPosition = 0;
+        internal var mmPosition = 0
 
         /**
          * Maximum undo history size.
          */
-        private int mmMaxHistorySize = -1;
+        private var mmMaxHistorySize = -1
 
         /**
          * The list of edits in chronological order.
          */
-        private final LinkedList<EditItem> mmHistory = new LinkedList<EditItem>();
+        internal val mmHistory = LinkedList<EditItem>()
 
         /**
          * Clear history.
          */
-        private void clear() {
-            mmPosition = 0;
-            mmHistory.clear();
+        internal fun clear() {
+            mmPosition = 0
+            mmHistory.clear()
         }
 
         /**
@@ -144,15 +141,14 @@ public class UndoRedoHelper {
          * executed after a call to getPrevious() removes all the future history
          * (elements with positions >= current history position).
          */
-        private void add(EditItem item) {
-            while (mmHistory.size() > mmPosition) {
-                mmHistory.removeLast();
+        internal fun add(item: EditItem) {
+            while (mmHistory.size > mmPosition) {
+                mmHistory.removeLast()
             }
-            mmHistory.add(item);
-            mmPosition++;
-
+            mmHistory.add(item)
+            mmPosition++
             if (mmMaxHistorySize >= 0) {
-                trimHistory();
+                trimHistory()
             }
         }
 
@@ -160,24 +156,23 @@ public class UndoRedoHelper {
          * Set the maximum history size. If size is negative, then history size
          * is only limited by the device memory.
          */
-        private void setMaxHistorySize(int maxHistorySize) {
-            mmMaxHistorySize = maxHistorySize;
+        internal fun setMaxHistorySize(maxHistorySize: Int) {
+            mmMaxHistorySize = maxHistorySize
             if (mmMaxHistorySize >= 0) {
-                trimHistory();
+                trimHistory()
             }
         }
 
         /**
          * Trim history when it exceeds max history size.
          */
-        private void trimHistory() {
-            while (mmHistory.size() > mmMaxHistorySize) {
-                mmHistory.removeFirst();
-                mmPosition--;
+        private fun trimHistory() {
+            while (mmHistory.size > mmMaxHistorySize) {
+                mmHistory.removeFirst()
+                mmPosition--
             }
-
             if (mmPosition < 0) {
-                mmPosition = 0;
+                mmPosition = 0
             }
         }
 
@@ -185,64 +180,59 @@ public class UndoRedoHelper {
          * Traverses the history backward by one position, returns and item at
          * that position.
          */
-        private EditItem getPrevious() {
+        internal fun getPrevious(): EditItem? {
             if (mmPosition == 0) {
-                return null;
+                return null
             }
-            mmPosition--;
-            return mmHistory.get(mmPosition-1);
+            mmPosition--
+            return mmHistory[mmPosition - 1]
         }
 
         /**
          * Traverses the history forward by one position, returns and item at
          * that position.
          */
-        private EditItem getNext() {
-            if (mmPosition >= mmHistory.size()) {
-                return null;
+        internal fun getNext(): EditItem? {
+            if (mmPosition >= mmHistory.size) {
+                return null
             }
-            EditItem item = mmHistory.get(mmPosition);
-            mmPosition++;
-            return item;
+            val item = mmHistory[mmPosition]
+            mmPosition++
+            return item
         }
 
-        private EditItem getCurrent() {
-            if (mmPosition == 0) {
-                return null;
-            }
-            return mmHistory.get(mmPosition - 1);
+        internal fun getCurrent(): EditItem? {
+            return if (mmPosition == 0) {
+                null
+            } else mmHistory[mmPosition - 1]
         }
     }
 
     /**
      * Represents the changes performed by a single edit operation.
      */
-    private final class EditItem {
-
-        public String text;
-
-        public EditItem(String text) {
-            this.text = text;
-        }
-    }
+    private inner class EditItem(var text: String)
 
     /**
      * Class that listens to changes in the text.
      */
-    private final class EditTextChangeListener implements WangRichEditor.OnTextChangeListener {
-
-        @Override
-        public void onTextChange(String text) {
-            if (text.equals("<p><br></p>") && mEditHistory.mmHistory.size() <=1) return;
+    private inner class EditTextChangeListener : OnTextChangeListener {
+        override fun onTextChange(text: String?) {
+            if (text == null) return
+            if (text == "<p><br></p>" && mEditHistory.mmHistory.size <= 1) return
             if (mIsUndoOrRedo) {
-                mIsUndoOrRedo = false;
+                if (text == "<p><br></p>" && text != currentText) {
+                    editor.html = currentText
+                    return
+                }
+                mIsUndoOrRedo = false
             } else {
-                if (mEditHistory.getCurrent() == null || !mEditHistory.getCurrent().text.equals(text)) {
-                    mEditHistory.add(new EditItem(text));
+                if (mEditHistory.getCurrent() == null || mEditHistory.getCurrent()!!.text != text) {
+                    mEditHistory.add(EditItem(text))
                 }
             }
-            isCanUndo.postValue(getCanUndo());
-            isCanRedo.postValue(getCanRedo());
+            isCanUndo.postValue(getCanUndo())
+            isCanRedo.postValue(getCanRedo())
         }
     }
 }

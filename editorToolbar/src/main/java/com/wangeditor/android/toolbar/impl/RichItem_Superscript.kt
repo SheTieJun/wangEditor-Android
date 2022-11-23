@@ -10,7 +10,7 @@ import com.wangeditor.android.toolbar.IRichItem
 
 class RichItem_Superscript: IRichItem() {
     override fun getType(): String {
-        return RichType.SUPERSCRIPT.name
+        return RichType.SuperScript.name
     }
 
     override fun onClick() {

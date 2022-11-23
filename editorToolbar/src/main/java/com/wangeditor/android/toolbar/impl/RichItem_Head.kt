@@ -6,29 +6,25 @@ import android.widget.ImageView.ScaleType.CENTER_INSIDE
 import android.widget.LinearLayout.LayoutParams
 import com.wangeditor.android.RichType
 import com.wangeditor.android.toolbar.IRichItem
-import com.wangeditor.android.toolbar.R
 
 /**
  *
- * <b>@author：</b> shetj<br>
- * <b>@createTime：</b> 2022/11/11<br>
- * <b>@email：</b> 375105540@qq.com<br>
- * <b>@describe</b>  <br>
  */
-class RichItem_NumberList: IRichItem() {
+class RichItem_Head: IRichItem() {
     override fun getType(): String {
-        return RichType.NumberList.name
+        return RichType.Header.name
     }
 
     override fun onClick() {
-        mWangEditor?.setNumbers()
+        mWangEditor?.setHeading(2)
     }
+
+
 
     override fun buildView(): View {
         return ImageView(mWangEditor!!.context).apply {
             layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.MATCH_PARENT)
             scaleType = CENTER_INSIDE
-            setImageResource(R.drawable.selector_note_list_num)
         }
     }
 }

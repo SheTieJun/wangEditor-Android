@@ -10,7 +10,7 @@ import com.wangeditor.android.toolbar.IRichItem
 
 class RichItem_Link: IRichItem() {
     override fun getType(): String {
-        return RichType.LINK.name
+        return RichType.Link.name
     }
 
     override fun onClick() {

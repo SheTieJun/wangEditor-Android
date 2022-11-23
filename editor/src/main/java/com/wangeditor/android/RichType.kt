@@ -2,30 +2,30 @@ package com.wangeditor.android
 
 
 enum class RichType {
-    BOLD, //加粗
-    ITALIC,
-    SUBSCRIPT,
-    SUPERSCRIPT,
-    STRIKETHROUGH,
-    UNDERLINE,//下滑先
-    INDENT,//缩进
-    H1,
-    H2,
-    H3,
-    H4,
-    H5,
-    H6,
-    ORDEREDLIST,//列表排序
-    UNORDEREDLIST,//没有1。2。3的列表
-    JUSTIFYCENTER,//居中
-    JUSTIFYFULL, //两端对齐
-    JUSTIFYLEFT,//靠左
-    JUSTIFYRIGHT,//靠右
-    TODO,//check box  to do
-    LINK,//链接
-    FONTSIZE,//字体大小
-    IMAGE,//图片 image
-    BLOCKQUOTE,//引用 blockquote
-    CODE,//代码块
-    DIVIDER,//分割线
+    Bold, //加粗
+    Italic,//斜体
+    SubScript,
+    SuperScript,
+    StrikeThrough,
+    FontSize,//字体大小
+    UnderLine,//下滑先
+    Header,
+    
+    
+    Indent,//缩进
+    NumberList,//列表排序
+    BulletList,//没有1。2。3的列表
+    JustifyCenter,//居中
+    JustifyFull, //两端对齐
+    JustifyLeft,//靠左
+    JustifyRight,//靠右
+    
+    
+    Todo,//check box  to do
+    Link,//链接
+   
+    Image,//图片 image
+    BlockQuote,//引用 blockquote
+    Code,//代码块
+    Divider,//分割线
 }

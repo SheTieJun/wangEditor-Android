@@ -44,10 +44,6 @@ class PublishActivity : AppCompatActivity(), OnClickListener {
     }
 
     private fun initEditor() {
-        //输入框显示字体的大小
-        binding!!.richEditor.setEditorFontSize(18)
-        //输入框显示字体的颜色
-        binding!!.richEditor.setEditorFontColor(ContextCompat.getColor(this,color.blackText))
         //输入框背景设置
         binding!!.richEditor.setEditorBackgroundColor(Color.WHITE)
         //输入框文本padding

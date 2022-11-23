@@ -13,7 +13,7 @@ import com.wangeditor.android.toolbar.IRichItem
  */
 class RichItem_Todo: IRichItem() {
     override fun getType(): String {
-        return RichType.BOLD.name
+        return RichType.Todo.name
     }
 
     override fun onClick() {

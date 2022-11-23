@@ -16,7 +16,7 @@ import com.wangeditor.android.toolbar.IRichItem
  */
 class RichItem_Intdent: IRichItem() {
     override fun getType(): String {
-        return RichType.INDENT.name
+        return RichType.Indent.name
     }
 
     override fun onClick() {

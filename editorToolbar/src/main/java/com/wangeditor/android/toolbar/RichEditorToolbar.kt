@@ -36,7 +36,6 @@ open class RichEditorToolbar @JvmOverloads constructor(
     fun setEditor(editor: WangRichEditor) {
         this.mEditor = editor
         editor.addOnDecorationChangeListener(this)
-
     }
 
 

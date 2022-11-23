@@ -6,23 +6,26 @@ import android.widget.ImageView.ScaleType.CENTER_INSIDE
 import android.widget.LinearLayout.LayoutParams
 import com.wangeditor.android.RichType
 import com.wangeditor.android.toolbar.IRichItem
+import com.wangeditor.android.toolbar.R
 
 /**
  *
+ * checkBox
  */
-class RichItem_Head2: IRichItem() {
+class RichItem_AlignCenter: IRichItem() {
     override fun getType(): String {
-        return RichType.H2.name
+        return RichType.Code.name
     }
 
     override fun onClick() {
-        mWangEditor?.setHeading(2)
+        mWangEditor?.insertCode()
     }
 
     override fun buildView(): View {
         return ImageView(mWangEditor!!.context).apply {
             layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.MATCH_PARENT)
             scaleType = CENTER_INSIDE
+            setImageResource(R.drawable.selector_note_text_center)
         }
     }
 }

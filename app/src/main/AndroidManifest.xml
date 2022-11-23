@@ -29,6 +29,7 @@
 
         <activity
             android:name=".PublishActivity"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/BaseTheme.MD3" />
 
         <activity

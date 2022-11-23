@@ -474,10 +474,10 @@ RE.editor.on('change', function () {
             items.push('H6');
         }
         if (type == "list-item" && fragment[0].ordered == true) {
-            items.push('orderedList');
+            items.push('NumberList');
         }
         if (type == "list-item" && fragment[0].ordered == false) {
-            items.push('unorderedList');
+            items.push('BulletsList');
         }
         if (type == "todo") {
             items.push('todo');

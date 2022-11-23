@@ -16,7 +16,7 @@ import com.wangeditor.android.toolbar.IRichItem
  */
 class RichItem_Italic: IRichItem() {
     override fun getType(): String {
-        return RichType.ITALIC.name
+        return RichType.Italic.name
     }
 
     override fun onClick() {
