@@ -20,6 +20,9 @@ import com.wangeditor.android.WangRichEditor.OnDecorationStateListener
 import com.wangeditor.android.demo.R.id
 import com.wangeditor.android.demo.R.mipmap
 import com.wangeditor.android.demo.databinding.ActivityPublishBinding
+import com.wangeditor.android.toolbar.initFunStyle
+import com.wangeditor.android.toolbar.initParagraphStyle
+import com.wangeditor.android.toolbar.initTextStyle
 import me.shetj.base.R.color
 import me.shetj.base.ktx.selectFile
 
@@ -39,7 +42,7 @@ class PublishActivity : AppCompatActivity(), OnClickListener {
             val title = sharedPreferences.getString("title", "title")
             val content = sharedPreferences.getString("content", "")
             binding!!.editName.setText(title)
-            binding!!.richEditor.html = content
+            binding!!.richEditor.setHtml(content)
         }
     }
 
@@ -53,6 +56,10 @@ class PublishActivity : AppCompatActivity(), OnClickListener {
         //监听键盘，打开键盘的时候滚动选中位置
         binding!!.richEditor.initKeyboardChange(this)
         //文本输入框监听事件
+        binding!!.editToolbar.setEditor(binding!!.richEditor)
+        binding!!.editToolbar.initTextStyle()
+        binding!!.editToolbar.initFunStyle()
+        binding!!.editToolbar.initParagraphStyle()
 
         binding!!.richEditor.addOnTextChangeListener(object :OnTextChangeListener{
             override fun onTextChange(text: String?) {
@@ -81,7 +88,7 @@ class PublishActivity : AppCompatActivity(), OnClickListener {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable) {
-                val html = binding!!.richEditor.html
+                val html = binding!!.richEditor.getHtml()
                 if (TextUtils.isEmpty(html)) {
                     binding!!.txtPublish.isSelected = false
                     binding!!.txtPublish.isEnabled = false
@@ -105,36 +112,7 @@ class PublishActivity : AppCompatActivity(), OnClickListener {
                 }
             }
         })
-        binding!!.richEditor.addOnDecorationChangeListener(object :OnDecorationStateListener{
-            override fun onStateChangeListener(text: String, types: List<RichType>) {
-                val flagArr = ArrayList<String>()
-                for (i in types.indices) {
-                    flagArr.add(types[i].name)
-                }
-                if (flagArr.contains("BOLD")) {
-                    binding!!.buttonBold.setImageResource(mipmap.bold_)
-                } else {
-                    binding!!.buttonBold.setImageResource(mipmap.bold)
-                }
-                if (flagArr.contains("UNDERLINE")) {
-                    binding!!.buttonUnderline.setImageResource(mipmap.underline_)
-                } else {
-                    binding!!.buttonUnderline.setImageResource(mipmap.underline)
-                }
-                if (flagArr.contains("ORDEREDLIST")) {
-                    binding!!.buttonListUl.setImageResource(mipmap.list_ul)
-                    binding!!.buttonListOl.setImageResource(mipmap.list_ol_)
-                } else {
-                    binding!!.buttonListOl.setImageResource(mipmap.list_ol)
-                }
-                if (flagArr.contains("UNORDEREDLIST")) {
-                    binding!!.buttonListOl.setImageResource(mipmap.list_ol)
-                    binding!!.buttonListUl.setImageResource(mipmap.list_ul_)
-                } else {
-                    binding!!.buttonListUl.setImageResource(mipmap.list_ul)
-                }
-            }
-        })
+
     }
 
     override fun onClick(v: View) {
@@ -143,7 +121,7 @@ class PublishActivity : AppCompatActivity(), OnClickListener {
             id.txt_publish -> {
                 val sharedPreferences = getSharedPreferences("art", MODE_PRIVATE)
                 val edit = sharedPreferences.edit()
-                edit.putString("content", binding!!.richEditor.html)
+                edit.putString("content", binding!!.richEditor.getHtml())
                 edit.putString("title", binding!!.editName.text.toString().trim { it <= ' ' })
                 edit.commit()
                 Toast.makeText(this, "发布成功", Toast.LENGTH_SHORT).show()
@@ -155,42 +133,6 @@ class PublishActivity : AppCompatActivity(), OnClickListener {
                 binding!!.richEditor.redo()
             id.button_rich_undo ->                 //撤销
                 binding!!.richEditor.undo()
-            id.button_bold -> {
-                //加粗
-                againEdit()
-                binding!!.richEditor.setBold()
-            }
-            id.button_underline -> {
-                //加下划线
-                againEdit()
-                binding!!.richEditor.setUnderline()
-            }
-            id.button_list_ul -> {
-                //加带点的序列号
-                againEdit()
-                binding!!.richEditor.setBullets()
-            }
-            id.button_list_ol -> {
-                //加带数字的序列号
-                againEdit()
-                binding!!.richEditor.setNumbers()
-            }
-            id.button_image -> {
-                if (!TextUtils.isEmpty(binding!!.richEditor.html)) {
-                    val arrayList = RichUtils.returnImageUrlsFromHtml(
-                        binding!!.richEditor.html
-                    )
-                    if (arrayList.size >= 9) {
-                        Toast.makeText(this@PublishActivity, "最多添加9张照片~", Toast.LENGTH_SHORT).show()
-                        return
-                    }
-                    selectFile {
-                        it?.let {
-                            binding!!.richEditor.insertImage(it.toString(),"图片${arrayList.size}")
-                        }
-                    }
-                }
-            }
         }
     }
 

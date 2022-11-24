@@ -23,13 +23,13 @@ import com.wangeditor.android.toolbar.impl.RichItem_UnderLine
 
 
 fun RichEditorToolbar.initTextStyle(){
+    addItem(RichItem_Head())
     addItem(RichItem_Bold())
+    addItem(RichItem_UnderLine())
+    addItem(RichItem_Italic())
     addItem(RichItem_FontSize())
     addItem(RichItem_Subscript()) //下标
     addItem(RichItem_Superscript()) //上标
-    addItem(RichItem_Head())
-    addItem(RichItem_UnderLine())
-    addItem(RichItem_Italic())
 }
 
 fun RichEditorToolbar.initParagraphStyle(){
@@ -37,14 +37,13 @@ fun RichEditorToolbar.initParagraphStyle(){
     addItem(RichItem_BulletList())
     addItem(RichItem_NumberList())
     addItem(RichItem_AlignCenter())
-    addItem(RichItem_AlignFull())
     addItem(RichItem_AlignLeft())
     addItem(RichItem_AlignRight())
 }
 
 fun RichEditorToolbar.initFunStyle(){
-    addItem(RichItem_Link())
     addItem(RichItem_Image())
+    addItem(RichItem_Link())
     addItem(RichItem_Todo())
     addItem(RichItem_Code())
     addItem(RichItem_Divider())

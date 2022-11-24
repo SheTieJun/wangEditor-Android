@@ -34,14 +34,6 @@ RE.getText = function () {
     return RE.editor.getText();
 }
 
-//展示
-//RE.setBaseTextColor = function (color) {
-//    RE.editor.style.color = color;
-//}
-//
-//RE.setBaseFontSize = function (size) {
-//    RE.editor.style.fontSize = size;
-//}
 
 RE.setPadding = function (left, top, right, bottom) {
     RE.editorContainer.style.paddingLeft = left;
@@ -81,17 +73,6 @@ RE.setHeight = function (size, focus) {
     }
 }
 
-//RE.setTextAlign = function (align) {
-//    RE.editor.style.textAlign = align;
-//}
-//
-//RE.setVerticalAlign = function (align) {
-//    RE.editor.style.verticalAlign = align;
-//}
-//
-//RE.setPlaceholder = function (placeholder) {
-//    editorConfig.placeholder = placeholder;
-//}
 
 RE.setInputEnabled = function (inputEnabled) {
     if (inputEnabled) {
@@ -193,7 +174,7 @@ RE.setCode = function () {
                     type: 'code',
                     language: 'Java',
                     children: [
-                        { text: codeS + '\n' }, // 选中节点的纯文本
+                        { text: codeS }, // 选中节点的纯文本
                     ],
                 },
             ],
@@ -229,70 +210,70 @@ isDisabledBlockquote = function () {
 
     // 匹配到 p blockquote ，不禁用
     if (nodeEntry) {
-        return false
+        return false;
     }
     // 未匹配到，则禁用
-    return true
+    return true;
 }
 
 
 RE.setTextColor = function (color) {
-    RE.editor.addMark('color', color)
+    RE.editor.addMark('color', color);
 }
 
 RE.setTextBackgroundColor = function (color) {
-    RE.editor.addMark('bgColor', color)
+    RE.editor.addMark('bgColor', color);
 }
 
 RE.setFontSize = function (fontSize) {
-    RE.editor.addMark('fontSize', fontSize)
+    RE.editor.addMark('fontSize', fontSize);
 }
 
 RE.setHeading = function (heading) {
     SlateTransforms.setNodes(editor, {
         type: 'header' + heading,
-    })
+    });
 }
 
 RE.setParagraph = function () {
     SlateTransforms.setNodes(editor, {
         type: 'paragraph',
-    })
+    });
 }
 
 RE.setIndent = function () {
     SlateTransforms.setNodes(editor, {
         indent: '2em'
-    })
+    });
 }
 
 RE.setOutdent = function () {
     SlateTransforms.setNodes(RE.editor, {
         indent: '0em'
-    })
+    });
 }
 
 RE.setJustifyLeft = function () {
     SlateTransforms.setNodes(editor, {
         textAlign: 'left',
-    })
+    });
 }
 
 RE.setJustifyCenter = function () {
     SlateTransforms.setNodes(editor, {
         textAlign: 'center',
-    })
+    });
 }
 
 RE.setJustifyRight = function () {
     SlateTransforms.setNodes(editor, {
         textAlign: 'right',
-    })
+    });
 }
 
 
 RE.insertImage = function (url, alt) {
-    RE.reFocus()
+    RE.reFocus();
     var image = {
         type: 'image',
         src: url,
@@ -300,12 +281,12 @@ RE.insertImage = function (url, alt) {
             width: '100%'
         },
         children: [{ text: alt }]
-    }
-    RE.editor.insertNode(image)
+    };
+    RE.editor.insertNode(image);
 }
 
 RE.insertImageW = function (url, alt, width) {
-    RE.reFocus()
+    RE.reFocus();
     var image = {
         type: 'image',
         src: url,
@@ -313,14 +294,14 @@ RE.insertImageW = function (url, alt, width) {
             width: width
         },
         children: [{ text: alt }]
-    }
-    RE.editor.insertNode(image)
+    };
+    RE.editor.insertNode(image);
 }
 
 
 
 RE.insertImageWH = function (url, alt, width, height) {
-    RE.reFocus()
+    RE.reFocus();
     var image = {
         type: 'image',
         src: url,
@@ -329,39 +310,39 @@ RE.insertImageWH = function (url, alt, width, height) {
             height: height
         },
         children: [{ text: alt }]
-    }
+    };
     RE.editor.insertNode(image)
 }
 
 RE.insertVideo = function (url, alt) {
     RE.reFocus()
-    var image = {
+    var video = {
         type: 'video',
         src: url,
         style: {
             width: '100%',
         },
         children: [{ text: '' }]
-    }
-    RE.editor.insertNode(image)
+    };
+    RE.editor.insertNode(video)
 }
 
 RE.insertVideoW = function (url, width) {
     RE.reFocus()
-    var image = {
+    var video = {
         type: 'video',
         src: url,
         style: {
             width: width
         },
         children: [{ text: '' }]
-    }
-    RE.editor.insertNode(image)
+    };
+    RE.editor.insertNode(video)
 }
 
 RE.insertVideoWH = function (url, width, height) {
     RE.reFocus()
-    var image = {
+    var video = {
         type: 'video',
         src: url,
         style: {
@@ -369,13 +350,17 @@ RE.insertVideoWH = function (url, width, height) {
             height: height
         },
         children: [{ text: '' }]
-    }
-    RE.editor.insertNode(image)
+    };
+    RE.editor.insertNode(video)
 }
 
 RE.insertAudio = function (url, alt) {
-    var html = '<audio src="' + url + '" controls></audio><br>';
-    RE.insertHTML(html);
+   RE.reFocus()
+    var audio = {
+        type: 'audio',
+        src: url
+    };
+    RE.editor.insertNode(audio);
 }
 
 
@@ -386,7 +371,7 @@ RE.insertHTML = function (html) {
 
 RE.insertLink = function (url, defText) {
     RE.reFocus()
-    var name = editor.getSelectionText()
+    var name = editor.getSelectionText();
     if (name == "" || name == null) {
         name = defText
     }
@@ -395,8 +380,15 @@ RE.insertLink = function (url, defText) {
         url: url,
         target: "_blank",
         children: [{ text: name }]
-    }
-    RE.editor.insertNode(image)
+    };
+    RE.editor.insertNode(image);
+}
+
+RE.setTodo = function (text) {
+    var active = !!DomEditor.getSelectedNodeByType(editor, 'todo');
+    SlateTransforms.setNodes(editor, {
+        type: active ? 'paragraph' : 'todo'
+    })
 }
 
 RE.setTodo = function (text) {
@@ -404,6 +396,11 @@ RE.setTodo = function (text) {
     SlateTransforms.setNodes(editor, {
         type: active ? 'paragraph' : 'todo'
     })
+}
+
+RE.setDivider = function () {
+    var elem = { type: 'divider', children: [{ text: '' }] }
+    RE.editor.insertNode(elem)
 }
 
 RE.focus = function () {
@@ -432,46 +429,49 @@ RE.editor.on('change', function () {
     var editStyle = SlateEditor.marks(RE.editor)
     var items = [];
     if (editStyle.bold) {
-        items.push('bold');
+        items.push('Bold');
     }
     if (editStyle.italic) {
-        items.push('italic');
+        items.push('Italic');
     }
     if (editStyle.sub) {
-        items.push('subscript');
+        items.push('SubScript');
     }
     if (editStyle.sup) {
-        items.push('superscript');
+        items.push('SuperScript');
     }
     if (editStyle.underline) {
-        items.push('underline');
+        items.push('UnderLine');
     }
     if (editStyle.through) {
-        items.push('through');
+        items.push('Through');
     }
 
+   if (editStyle.divider) {
+        items.push('Divider');
+    }
 
     const fragment = editor.getFragment()
 
     if (fragment != null) {
         var type = fragment[0].type
         if (type == "header1") {
-            items.push('H1');
+            items.push('header1');
         }
         if (type == "header2") {
-            items.push('H2');
+            items.push('header2');
         }
         if (type == "header3") {
-            items.push('H3');
+            items.push('header3');
         }
         if (type == "header4") {
-            items.push('H4');
+            items.push('header4');
         }
         if (type == "header5") {
-            items.push('H5');
+            items.push('header5');
         }
         if (type == "header6") {
-            items.push('H6');
+            items.push('header6');
         }
         if (type == "list-item" && fragment[0].ordered == true) {
             items.push('NumberList');
@@ -480,33 +480,33 @@ RE.editor.on('change', function () {
             items.push('BulletsList');
         }
         if (type == "todo") {
-            items.push('todo');
+            items.push('Todo');
         }
 
         if (type == 'pre' && fragment[0] != null) {
             if (fragment[0].children[0].type == 'code') {
-                items.push('code');
+                items.push('Code');
             }
         }
 
         var textAlign = fragment[0].textAlign
         if (textAlign == "center") {
-            items.push('justifyCenter');
+            items.push('JustifyCenter');
         }
         if (textAlign == "left") {
-            items.push('justifyLeft');
+            items.push('JustifyLeft');
         }
         if (textAlign == "right") {
-            items.push('justifyRight');
+            items.push('JustifyRight');
         }
         if (textAlign == "justify") {
-            items.push('justifyFull');
+            items.push('JustifyFull');
         }
 
         //判断是否有缩进
         var indent = fragment[0].indent
         if (indent == '2em') {
-            items.push('indent');
+            items.push('Indent');
         }
 
     }

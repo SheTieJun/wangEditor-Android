@@ -5,6 +5,7 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -20,10 +21,12 @@ import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.core.content.ContextCompat.startActivity
 import com.wangeditor.android.RichUtils.initKeyboard
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 import java.util.concurrent.CopyOnWriteArrayList
+
 
 open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
     context: Context,
@@ -126,7 +129,7 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
     }
 
     private fun stateCheck(text: String) {
-        val state = text.replaceFirst(STATE_SCHEME.toRegex(), "").uppercase()
+        val state = text.replaceFirst(STATE_SCHEME.toRegex(), "")
         val types: MutableList<RichType> = ArrayList()
         for (type in RichType.values()) {
             if (TextUtils.indexOf(state, type.name) != -1) {
@@ -154,17 +157,25 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
         return (pxValue / density + 0.5f).toInt()
     }
 
-    // No handling
-    var html: String?
-        get() = mContents
-        set(contents) {
-            try {
-                exec("javascript:RE.setHtml('" + URLEncoder.encode(contents?:"", "UTF-8") + "');")
-            } catch (e: UnsupportedEncodingException) {
-                // No handling
-            }
-            mContents = contents?:""
+    /**
+     *
+     * @param contents
+     */
+    fun setHtml(contents: String?){
+        mContents = if (contents.isNullOrEmpty()){
+            "<p><br><p>"
+        }else{
+            contents
         }
+        try {
+            exec("javascript:RE.setHtml('" + URLEncoder.encode(mContents?:"<p><br><p>", "UTF-8") + "');")
+        } catch (e: UnsupportedEncodingException) {
+            // No handling
+        }
+    }
+
+
+    fun getHtml() = mContents
 
     fun disable() {
         exec("javascript:RE.disable();")
@@ -414,6 +425,10 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
         exec("javascript:RE.setTodo();")
     }
 
+    fun insertDivider(){
+        exec("javascript:RE.setDivider();")
+    }
+
 
     fun insertCode(){
         exec("javascript:RE.setCode();")
@@ -497,6 +512,12 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
             } else if (TextUtils.indexOf(url, STATE_SCHEME) == 0) {
                 stateCheck(decode)
                 return true
+            } else if (url.startsWith("http")){
+                val intent = Intent()
+                intent.action = "android.intent.action.VIEW"
+                intent.data = Uri.parse(url)
+                startActivity(context,intent,null)
+                return true
             }
             return super.shouldOverrideUrlLoading(view, url)
         }
@@ -511,8 +532,14 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
             } else if (TextUtils.indexOf(url, STATE_SCHEME) == 0) {
                 stateCheck(decode)
                 return true
+            } else if (url.startsWith("http")){
+                val intent = Intent()
+                intent.action = "android.intent.action.VIEW"
+                intent.data = Uri.parse(url)
+                startActivity(context,intent,null)
+                return true
             }
-            return super.shouldOverrideUrlLoading(view, request)
+            return  super.shouldOverrideUrlLoading(view, url)
         }
     }
 

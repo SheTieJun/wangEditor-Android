@@ -30,6 +30,7 @@ open class RichEditorToolbar @JvmOverloads constructor(
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
         },LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.MATCH_PARENT))
+        overScrollMode = OVER_SCROLL_NEVER
     }
 
 
