@@ -1,6 +1,22 @@
 const { SlateEditor, SlateTransforms, SlateText, DomEditor } = window.wangEditor
+const { createEditor, createToolbar } = window.wangEditor
 
-var RE = {};
+const editorConfig = {
+    placeholder: '开始输入正文'
+}
+
+const editor = createEditor({
+    selector: '#editor-container',
+    html: '<p><br></p>',
+    config: editorConfig,
+    mode: 'simple', //default or 'simple'
+})
+
+if (typeof browser === "undefined") {
+    var browser = chrome;
+}
+
+const RE = {};
 
 RE.editor = editor;
 
@@ -512,6 +528,7 @@ RE.editor.on('change', function () {
     }
     window.location.href = "re-state://" + encodeURI(items.join(','));
     window.location.href = "re-callback://" + encodeURIComponent(RE.getHtml());
+    browser.runtime.sendNativeMessage("browser", items);
     console.log(editStyle)
     console.log(fragment)
 })

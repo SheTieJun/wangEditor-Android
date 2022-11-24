@@ -1,6 +1,5 @@
 package com.wangeditor.android
 
-import android.R.attr
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -9,29 +8,38 @@ import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.net.http.SslError
-import android.os.Build.VERSION
-import android.os.Build.VERSION_CODES
 import android.text.TextUtils
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.webkit.SslErrorHandler
-import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
+import android.webkit.WebView.setWebContentsDebuggingEnabled
 import android.webkit.WebViewClient
+import androidx.annotation.Nullable
 import com.wangeditor.android.RichUtils.initKeyboard
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 import java.util.concurrent.CopyOnWriteArrayList
+import org.json.JSONException
+import org.json.JSONObject
+import org.mozilla.geckoview.ContentBlocking
+import org.mozilla.geckoview.GeckoResult
+import org.mozilla.geckoview.GeckoRuntime
+import org.mozilla.geckoview.GeckoSession
+import org.mozilla.geckoview.GeckoSession.ProgressDelegate.SecurityInformation
+import org.mozilla.geckoview.GeckoSession.SessionState
+import org.mozilla.geckoview.GeckoView
+import org.mozilla.geckoview.WebExtension
+import org.mozilla.geckoview.WebExtension.MessageDelegate
+import org.mozilla.geckoview.WebExtension.MessageSender
+import org.mozilla.geckoview.WebExtension.Port
+import org.mozilla.geckoview.WebExtension.PortDelegate
 
-open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
-    context: Context,
-    attrs: AttributeSet?,
-    defStyleAttr: Int
-) : WebView(context, attrs, defStyleAttr) {
 
-
+open class WangRichEditor(context: Context, attrs: AttributeSet?) : GeckoView(context, attrs) {
 
 
     interface OnTextChangeListener {
@@ -51,10 +59,55 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
     private var mTextChangeListenerList: CopyOnWriteArrayList<OnTextChangeListener>? = null
     private var mDecorationStateListenerList: CopyOnWriteArrayList<OnDecorationStateListener>? = null
     private var mLoadListener: AfterInitialLoadListener? = null
+    private var runtime: GeckoRuntime? = null
+    private var mPort: Port? = null
+    private val contentMap = HashMap<Any, Any>()
+    private val portDelegate: PortDelegate = object : PortDelegate {
+        override fun onPortMessage(
+            message: Any,
+            port: Port
+        ) {
 
-    @JvmOverloads
-    constructor(context: Context, attrs: AttributeSet? = null) : this(context, attrs, attr.webViewStyle) {
+            Log.d(
+                "MessageDelegate", "Received message from WebExtension: "
+                        + message
+            )
+        }
+
+        override fun onDisconnect(port: Port) {
+            Log.d("MessageDelegate", "onDisconnect")
+            // After this method is called, this port is not usable anymore.
+            if (port === mPort) {
+                mPort = null
+            }
+        }
     }
+
+    private val messageDelegate: MessageDelegate = object : MessageDelegate {
+        override fun onMessage(
+            nativeApp: String,
+            message: Any,
+            sender: MessageSender
+        ): GeckoResult<Any>? {
+            //处理数据
+            Log.d("MessageDelegate", "onMessage:$message")
+            val decode = Uri.decode(message.toString())
+            if (TextUtils.indexOf(decode, CALLBACK_SCHEME) == 0) {
+                callback(decode)
+            } else if (TextUtils.indexOf(decode, STATE_SCHEME) == 0) {
+                stateCheck(decode)
+            }
+            return null
+        }
+
+        @Nullable
+        override fun onConnect(port: Port) {
+            Log.d("MessageDelegate", "onConnect")
+            mPort = port
+            mPort?.setDelegate(portDelegate)
+        }
+    }
+
 
     init {
         init()
@@ -64,11 +117,62 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
     private fun init() {
         isVerticalScrollBarEnabled = false
         isHorizontalScrollBarEnabled = false
-        settings.javaScriptEnabled = true
-        webChromeClient = WebChromeClient()
-        webViewClient = createWebviewClient()
-        loadUrl(SETUP_HTML)
+
+        val session = GeckoSession()
+        if (runtime == null) {
+            runtime = GeckoRuntime.getDefault(context)
+            session.open(runtime!!)
+        }
+
+        runtime!!
+            .webExtensionController
+            .ensureBuiltIn("resource://android/assets/", "messaging@wangEditor.com")
+            .accept({ extension: WebExtension? ->
+                post {
+                    extension?.let {
+                        session
+                            .webExtensionController
+                            .setMessageDelegate(it, messageDelegate, "browser")
+                    }
+                    extension?.setMessageDelegate(messageDelegate, "browser")
+                }
+            }
+            ) { e: Throwable? ->
+                Log.e(
+                    "MessageDelegate",
+                    "Error registering extension",
+                    e
+                )
+            }
+        setSession(session)
+
+
+        session.loadUri(SETUP_HTML)
+        session.progressDelegate = createProgressDelegate()
+        session.contentDelegate
         setWebContentsDebuggingEnabled(true)
+    }
+
+
+    private fun createProgressDelegate(): GeckoSession.ProgressDelegate {
+        return object : GeckoSession.ProgressDelegate {
+            override fun onPageStop(session: GeckoSession, success: Boolean) = Unit
+            override fun onSecurityChange(session: GeckoSession, securityInfo: SecurityInformation) = Unit
+            override fun onPageStart(session: GeckoSession, url: String) = Unit
+
+            override fun onProgressChange(session: GeckoSession, progress: Int) {
+
+
+            }
+
+            override fun onSessionStateChange(session: GeckoSession, sessionState: SessionState) {
+                super.onSessionStateChange(session, sessionState)
+                sessionState.forEach { ss ->
+                    Log.i("MessageDelegate", ss.uri)
+                }
+            }
+
+        }
     }
 
     private fun addOnLayoutChangeUpdateHeight() {
@@ -79,36 +183,31 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
         }
     }
 
-
-    fun createWebviewClient(): EditorWebViewClient {
-        return EditorWebViewClient()
-    }
-
     fun addOnTextChangeListener(listener: OnTextChangeListener) {
         if (mTextChangeListenerList == null) {
             mTextChangeListenerList = CopyOnWriteArrayList()
         }
-        if (!mTextChangeListenerList!!.contains(listener)){
+        if (!mTextChangeListenerList!!.contains(listener)) {
             mTextChangeListenerList?.add(listener)
             listener.onTextChange(mContents)
         }
     }
 
-    fun removeTextChangeListener(listener: OnTextChangeListener){
+    fun removeTextChangeListener(listener: OnTextChangeListener) {
         mTextChangeListenerList?.remove(listener)
     }
 
     fun addOnDecorationChangeListener(listener: OnDecorationStateListener) {
-        if (mDecorationStateListenerList == null){
+        if (mDecorationStateListenerList == null) {
             mDecorationStateListenerList = CopyOnWriteArrayList()
         }
-        if (!mDecorationStateListenerList!!.contains(listener)){
+        if (!mDecorationStateListenerList!!.contains(listener)) {
             mDecorationStateListenerList!!.add(listener)
         }
     }
 
 
-    fun removeDecorationChangeListener(listener: OnDecorationStateListener){
+    fun removeDecorationChangeListener(listener: OnDecorationStateListener) {
         mDecorationStateListenerList?.remove(listener)
     }
 
@@ -159,19 +258,23 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
         get() = mContents
         set(contents) {
             try {
-                exec("javascript:RE.setHtml('" + URLEncoder.encode(contents?:"", "UTF-8") + "');")
+                contentMap.clear()
+                contentMap["content"] = URLEncoder.encode(contents ?: "", "UTF-8")
+                exec("RE.setHtml", contentMap)
             } catch (e: UnsupportedEncodingException) {
                 // No handling
             }
-            mContents = contents?:""
+            mContents = contents ?: ""
         }
 
     fun disable() {
-        exec("javascript:RE.disable();")
+        contentMap.clear()
+        exec("RE.disable", contentMap)
     }
 
     fun enable() {
-        exec("javascript:RE.enable();")
+        contentMap.clear()
+        exec("RE.enable", contentMap)
     }
 
 
@@ -184,10 +287,9 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
      */
     override fun setPadding(left: Int, top: Int, right: Int, bottom: Int) {
 //        super.setPadding(left, top, right, bottom)
-        exec(
-            "javascript:RE.setPadding('" + left + "px', '" + top + "px', '" + right + "px', '" + bottom
-                    + "px');"
-        )
+        contentMap.clear()
+        contentMap["content"] = "'${left}px','${top}px', '${right}px', '${bottom}px'"
+        exec("RE.setPadding", contentMap)
     }
 
     override fun setPaddingRelative(start: Int, top: Int, end: Int, bottom: Int) {
@@ -207,31 +309,43 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
         val bitmap = Utils.decodeResource(context, resid)
         val base64 = Utils.toBase64(bitmap)
         bitmap.recycle()
-        exec("javascript:RE.setBackgroundImage('url(data:image/png;base64,$base64)');")
+        contentMap.clear()
+        contentMap["content"] = "'url(data:image/png;base64,$base64)'"
+        exec("RE.setBackgroundImage", contentMap)
     }
 
     override fun setBackground(background: Drawable) {
         val bitmap = Utils.toBitmap(background)
         val base64 = Utils.toBase64(bitmap)
         bitmap.recycle()
-        exec("javascript:RE.setBackgroundImage('url(data:image/png;base64,$base64)');")
+        contentMap.clear()
+        contentMap["content"] = "'url(data:image/png;base64,$base64)'"
+        exec("RE.setBackgroundImage", contentMap)
     }
 
     fun setBackground(url: String) {
-        exec("javascript:RE.setBackgroundImage('url($url)');")
+        contentMap.clear()
+        contentMap["content"] = "'url($url)'"
+        exec("RE.setBackgroundImage", contentMap)
     }
 
-    fun setEditorCursorColor(color: Int){
+    fun setEditorCursorColor(color: Int) {
         val hex = convertHexColorString(color)
-        exec("javascript:RE.setCaretColor('$hex');")
+        contentMap.clear()
+        contentMap["content"] = "'$hex'"
+        exec("RE.setCaretColor", contentMap)
     }
 
     fun setEditorWidth(px: Int) {
-        exec("javascript:RE.setWidth('" + px + "px');")
+        contentMap.clear()
+        contentMap["content"] = "'${px}px'"
+        exec("RE.setWidth")
     }
 
     fun setEditorHeight(px: Int) {
-        exec("javascript:RE.setHeight('" + px + "px');")
+        contentMap.clear()
+        contentMap["content"] = "'${px}px'"
+        exec("RE.setHeight")
     }
 
     /**
@@ -239,74 +353,76 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
      * @param needF 会自动滚到到选中位置
      */
     fun setEditorHeight(px: Int, needF: Boolean) {
-        exec("javascript:RE.setHeight('" + px + "px'," + needF + ");")
+        contentMap.clear()
+        contentMap["content"] = "'${px}px', $needF"
+        exec("RE.setHeight", contentMap)
     }
 
     fun setPlaceholder(placeholder: String) {
-        exec("javascript:RE.setPlaceholder('$placeholder');")
+        contentMap.clear()
+        contentMap["content"] = "'$placeholder'"
+        exec("RE.setPlaceholder")
     }
 
     fun setInputEnabled(inputEnabled: Boolean) {
-        exec("javascript:RE.setInputEnabled($inputEnabled)")
+        contentMap.clear()
+        contentMap["content"] = "$inputEnabled"
+        exec("RE.setInputEnabled()")
     }
 
-    /**
-     * 动态添加css
-     * @param cssFile
-     */
-    fun loadCSS(cssFile: String) {
-        val jsCSSImport = "(function() {" +
-                "    var head  = document.getElementsByTagName(\"head\")[0];" +
-                "    var link  = document.createElement(\"link\");" +
-                "    link.rel  = \"stylesheet\";" +
-                "    link.type = \"text/css\";" +
-                "    link.href = \"" + cssFile + "\";" +
-                "    link.media = \"all\";" +
-                "    head.appendChild(link);" +
-                "}) ();"
-        exec("javascript:$jsCSSImport")
-    }
 
     fun undo() {
-        exec("javascript:RE.undo();")
+        contentMap.clear()
+        exec("RE.undo", contentMap)
     }
 
     fun redo() {
-        exec("javascript:RE.redo();")
+        contentMap.clear()
+        exec("RE.redo", contentMap)
     }
 
     fun setBold() {
-        exec("javascript:RE.setBold();")
+        contentMap.clear()
+        exec("RE.setBold", contentMap)
     }
 
     fun setItalic() {
-        exec("javascript:RE.setItalic();")
+        contentMap.clear()
+        exec("RE.setItalic", contentMap)
     }
 
     fun setSubscript() {
-        exec("javascript:RE.setSubscript();")
+        contentMap.clear()
+        exec("RE.setSubscript", contentMap)
     }
 
     fun setSuperscript() {
-        exec("javascript:RE.setSuperscript();")
+        contentMap.clear()
+        exec("RE.setSuperscript", contentMap)
     }
 
     fun setStrikeThrough() {
-        exec("javascript:RE.setStrikeThrough();")
+        contentMap.clear()
+        exec("RE.setStrikeThrough", contentMap)
     }
 
     fun setUnderline() {
-        exec("javascript:RE.setUnderline();")
+        contentMap.clear()
+        exec("RE.setUnderline", contentMap)
     }
 
     fun setTextColor(color: Int) {
         val hex = convertHexColorString(color)
-        exec("javascript:RE.setTextColor('$hex');")
+        contentMap.clear()
+        contentMap["content"] = "'$hex'"
+        exec("RE.setTextColor")
     }
 
     fun setTextBackgroundColor(color: Int) {
         val hex = convertHexColorString(color)
-        exec("javascript:RE.setTextBackgroundColor('$hex');")
+        contentMap.clear()
+        contentMap["content"] = "'$hex'"
+        exec("RE.setTextBackgroundColor")
     }
 
     /**
@@ -315,55 +431,71 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
      * @param fontSize 默认18
      */
     fun setFontSize(fontSize: Int) {
-        exec("javascript:RE.setFontSize('$fontSize'px);")
+        contentMap.clear()
+        contentMap["content"] = "${fontSize}px"
+        exec("RE.setFontSize")
     }
 
     fun removeFormat() {
-        exec("javascript:RE.removeFormat();")
+        contentMap.clear()
+        exec("RE.removeFormat")
     }
 
     fun setHeading(heading: Int) {
-        exec("javascript:RE.setHeading('$heading');")
+        contentMap.clear()
+        contentMap["content"] = "'$heading'"
+        exec("RE.setHeading")
     }
 
     fun setParagraph() {
-        exec("javascript:RE.setParagraph();")
+        contentMap.clear()
+        exec("RE.setParagraph")
     }
 
     fun setIndent() {
-        exec("javascript:RE.setIndent();")
+        contentMap.clear()
+        exec("RE.setIndent")
     }
 
     fun setOutdent() {
-        exec("javascript:RE.setOutdent();")
+        contentMap.clear()
+        exec("RE.setOutdent")
     }
 
     fun setAlignLeft() {
-        exec("javascript:RE.setJustifyLeft();")
+        contentMap.clear()
+        exec("RE.setJustifyLeft")
     }
 
     fun setAlignCenter() {
-        exec("javascript:RE.setJustifyCenter();")
+        contentMap.clear()
+        exec("RE.setJustifyCenter")
     }
 
     fun setAlignRight() {
-        exec("javascript:RE.setJustifyRight();")
+        contentMap.clear()
+        exec("RE.setJustifyRight")
     }
 
     fun setBlockquote() {
-        exec("javascript:RE.setBlockquote();")
+        contentMap.clear()
+        exec("RE.setBlockquote")
     }
 
     fun setBullets() {
-        exec("javascript:RE.setBullets();")
+        contentMap.clear()
+        exec("RE.setBullets")
     }
 
     fun setNumbers() {
-        exec("javascript:RE.setNumbers();")
+        contentMap.clear()
+        exec("RE.setNumbers")
     }
 
     fun insertImage(url: String, alt: String) {
-        exec("javascript:RE.insertImage('$url', '$alt');")
+        contentMap.clear()
+        contentMap["content"] = "'$url', '$alt'"
+        exec("RE.insertImage", contentMap)
     }
 
     /**
@@ -374,7 +506,9 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
      * @param width
      */
     fun insertImage(url: String, alt: String, width: Int) {
-        exec("javascript:RE.insertImageW('$url', '$alt','$width');")
+        contentMap.clear()
+        contentMap["content"] = "'$url', '$alt','$width'"
+        exec("RE.insertImageW", contentMap)
     }
 
     /**
@@ -387,45 +521,61 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
      * @param height
      */
     fun insertImage(url: String, alt: String, width: Int, height: Int) {
-        exec("javascript:RE.insertImageWH('$url', '$alt','$width', '$height');")
+        contentMap.clear()
+        contentMap["content"] = "'$url', '$alt','$width', '$height'"
+        exec("RE.insertImageWH", contentMap)
     }
 
     fun insertVideo(url: String) {
-        exec("javascript:RE.insertVideo('$url');")
+        contentMap.clear()
+        contentMap["content"] = "'$url'"
+        exec("RE.insertVideo", contentMap)
     }
 
     fun insertVideo(url: String, width: Int) {
-        exec("javascript:RE.insertVideoW('$url', '$width');")
+        contentMap.clear()
+        contentMap["content"] = "'$url', '$width'"
+        exec("RE.insertVideoW", contentMap)
     }
 
     fun insertVideo(url: String, width: Int, height: Int) {
-        exec("javascript:RE.insertVideoWH('$url', '$width', '$height');")
+        contentMap.clear()
+        contentMap["content"] = "'$url', '$width', '$height'"
+        exec("RE.insertVideoWH", contentMap)
     }
 
     fun insertAudio(url: String) {
-        exec("javascript:RE.insertAudio('$url');")
+        contentMap.clear()
+        contentMap["content"] = "'$url'"
+        exec("RE.insertAudio", contentMap)
     }
 
     fun insertLink(href: String, defText: String) {
-        exec("javascript:RE.insertLink('$href', '$defText');")
+        contentMap.clear()
+        contentMap["content"] = "'$href', '$defText'"
+        exec("RE.insertLink")
     }
 
     fun insertTodo() {
-        exec("javascript:RE.setTodo();")
+        contentMap.clear()
+        exec("RE.setTodo", contentMap)
     }
 
 
-    fun insertCode(){
-        exec("javascript:RE.setCode();")
+    fun insertCode() {
+        contentMap.clear()
+        exec("RE.setCode", contentMap)
     }
 
     fun focusEditor() {
         requestFocus()
-        exec("javascript:RE.focus();")
+        contentMap.clear()
+        exec("RE.focus", contentMap)
     }
 
     fun clearFocusEditor() {
-        exec("javascript:RE.blurFocus();")
+        contentMap.clear()
+        exec("RE.blurFocus", contentMap)
     }
 
     private fun updateHeightByKeyboard() {
@@ -458,21 +608,16 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
         return String.format("#%06X", 0xFFFFFF and color)
     }
 
-    protected fun exec(trigger: String) {
-        if (isReady) {
-            load(trigger)
-        } else {
-            postDelayed({ exec(trigger) }, 100)
+    protected fun exec(event: String, map: HashMap<*, *> = contentMap) {
+        val message = JSONObject(map)
+        try {
+            message.put("event", event)
+        } catch (ex: JSONException) {
+            throw RuntimeException(ex)
         }
+        mPort?.postMessage(message)
     }
 
-    private fun load(trigger: String) {
-        if (VERSION.SDK_INT >= VERSION_CODES.KITKAT) {
-            evaluateJavascript(trigger, null)
-        } else {
-            loadUrl(trigger)
-        }
-    }
 
     inner class EditorWebViewClient : WebViewClient() {
         override fun onPageFinished(view: WebView, url: String) {
@@ -516,36 +661,10 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
         }
     }
 
-    private var mHeight = 0
-
-    //实例化WebViwe后，调用此方法可滚动到底部
-    fun scrollToBottom() {
-        val temp = computeVerticalScrollRange()
-        val valueAnimator = ValueAnimator.ofInt(height, temp)
-        valueAnimator.interpolator = LinearInterpolator()
-        valueAnimator.duration = 200
-        valueAnimator.addUpdateListener { animation: ValueAnimator ->
-            val nowHeight = animation.animatedValue as Int
-            mHeight = nowHeight
-            scrollTo(0, height)
-            if (height == temp) {
-                //再调用一次，解决不能滑倒底部
-                scrollTo(0, computeVerticalScrollRange())
-            }
-        }
-        valueAnimator.start()
-    }
-
-    override fun destroy() {
-        mDecorationStateListenerList?.clear()
-        mTextChangeListenerList?.clear()
-        super.destroy()
-    }
-
     companion object {
         //wang_editor.html
         private const val TAG = "RichEditor"
-        private const val SETUP_HTML = "file:///android_asset/wang_editor.html"
+        private const val SETUP_HTML = "resource://android/assets/wang_editor.html"
         private const val CALLBACK_SCHEME = "re-callback://"
         private const val STATE_SCHEME = "re-state://"
     }

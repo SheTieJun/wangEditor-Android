@@ -1,0 +1,25 @@
+{
+  "manifest_version": 2,
+  "name": "wangEditor",
+  "version": "1.0",
+  "description": "wangEditor web extension.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "messaging@wangEditor.com"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["resource://android/assets/wang_editor.html"],
+      "js": ["wang_app_editor.js"]
+    }
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "permissions": [
+    "nativeMessaging",
+    "nativeMessagingFromContent",
+    "geckoViewAddons"
+  ]
+}
