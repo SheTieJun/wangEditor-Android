@@ -4,6 +4,7 @@ import com.wangeditor.android.toolbar.impl.RichItem_AlignCenter
 import com.wangeditor.android.toolbar.impl.RichItem_AlignFull
 import com.wangeditor.android.toolbar.impl.RichItem_AlignLeft
 import com.wangeditor.android.toolbar.impl.RichItem_AlignRight
+import com.wangeditor.android.toolbar.impl.RichItem_Audio
 import com.wangeditor.android.toolbar.impl.RichItem_BlockQuote
 import com.wangeditor.android.toolbar.impl.RichItem_Bold
 import com.wangeditor.android.toolbar.impl.RichItem_BulletList
@@ -42,10 +43,16 @@ fun RichEditorToolbar.initParagraphStyle(){
 }
 
 fun RichEditorToolbar.initFunStyle(){
-    addItem(RichItem_Image())
     addItem(RichItem_Link())
     addItem(RichItem_Todo())
     addItem(RichItem_Code())
     addItem(RichItem_Divider())
     addItem(RichItem_BlockQuote())
 }
+
+fun RichEditorToolbar.initMedia(){
+    addItem(RichItem_Image())
+    addItem(RichItem_Audio())
+    addItem(RichItem_Image())
+}
+

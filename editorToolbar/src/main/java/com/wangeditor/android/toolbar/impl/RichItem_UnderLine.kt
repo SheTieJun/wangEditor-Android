@@ -29,7 +29,7 @@ class RichItem_UnderLine: IRichItem() {
         return ImageView(mWangEditor!!.context).apply {
             layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.MATCH_PARENT)
             scaleType = CENTER_INSIDE
-            setImageResource(R.drawable.selector_note_underline_2)
+            setImageResource(R.drawable.selector_note_underline)
             setPadding(15)
         }
     }

@@ -9,7 +9,7 @@ enum class RichType {
     StrikeThrough,
     FontSize,//字体大小
     UnderLine,//下滑先
-    Header,
+    Header,//header
     
     
     Indent,//缩进
@@ -25,6 +25,8 @@ enum class RichType {
     Link,//链接
    
     Image,//图片 image
+    Video,//视频
+    Audio,//音频
     BlockQuote,//引用 blockquote
     Code,//代码块
     Divider,//分割线

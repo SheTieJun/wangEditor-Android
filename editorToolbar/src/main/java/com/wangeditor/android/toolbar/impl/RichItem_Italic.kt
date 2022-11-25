@@ -28,9 +28,8 @@ class RichItem_Italic: IRichItem() {
     override fun buildView(): View {
         return ImageView(mWangEditor!!.context).apply {
             layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.MATCH_PARENT)
-            scaleType = CENTER_INSIDE
             setPadding(15)
-            setImageResource(R.drawable.selector_note_italic_2)
+            setImageResource(R.drawable.selector_note_italic)
         }
     }
 }

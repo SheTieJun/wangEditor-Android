@@ -14,9 +14,9 @@ import com.wangeditor.android.toolbar.R
 import java.io.File
 
 
-class RichItem_Image : AbRichItem_Media() {
+class RichItem_Audio : AbRichItem_Media() {
     override fun getType(): String {
-        return RichType.Image.name
+        return RichType.Audio.name
     }
 
     override fun onClick() {
@@ -25,22 +25,24 @@ class RichItem_Image : AbRichItem_Media() {
         }
     }
 
+
     override fun insertMedia(url: String) {
         if (url.startsWith("http")||url.startsWith("file")) {
-            mWangEditor!!.insertImage(url, "")
+            mWangEditor!!.insertAudio(url)
             return
         }
         if (File(url).exists()){
-            mWangEditor!!.insertImage("file://$url", "")
+            mWangEditor!!.insertAudio("file://$url")
             return
         }
-        Log.e("WangRichEditor","insertImage is error,url is not standard")
+        Log.e("WangRichEditor","insertAudio is error,url is not standard")
     }
 
 
     override fun buildView(): View {
         return ImageView(mWangEditor!!.context).apply {
             layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT)
+            scaleType = CENTER_INSIDE
             setPadding(15)
             setImageResource(R.drawable.note_icon_pic)
         }

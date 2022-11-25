@@ -20,11 +20,15 @@ import com.wangeditor.android.WangRichEditor.OnDecorationStateListener
 import com.wangeditor.android.demo.R.id
 import com.wangeditor.android.demo.R.mipmap
 import com.wangeditor.android.demo.databinding.ActivityPublishBinding
+import com.wangeditor.android.toolbar.IRichItem
 import com.wangeditor.android.toolbar.initFunStyle
+import com.wangeditor.android.toolbar.initMedia
 import com.wangeditor.android.toolbar.initParagraphStyle
 import com.wangeditor.android.toolbar.initTextStyle
+import com.wangeditor.android.toolbar.media.MediaStrategy
 import me.shetj.base.R.color
 import me.shetj.base.ktx.selectFile
+import me.shetj.base.ktx.showToast
 
 class PublishActivity : AppCompatActivity(), OnClickListener {
     var binding: ActivityPublishBinding? = null
@@ -59,8 +63,24 @@ class PublishActivity : AppCompatActivity(), OnClickListener {
         binding!!.editToolbar.setEditor(binding!!.richEditor)
         binding!!.editToolbar.initTextStyle()
         binding!!.editToolbar.initFunStyle()
+        binding!!.editToolbar.initMedia()
         binding!!.editToolbar.initParagraphStyle()
-
+        binding!!.editToolbar.setMediaStrategy(object :MediaStrategy{
+            override fun startSelectMedia(iRichItem: IRichItem) {
+                when(iRichItem.getType()){
+                    RichType.Video.name ->{
+                        "选择视频".showToast()
+                    }
+                    RichType.Audio.name ->{
+                        "选择音频".showToast()
+                    }
+                    RichType.Image.name ->{
+                        "选择图片".showToast()
+                    }
+                    else->{}
+                }
+            }
+        })
         binding!!.richEditor.addOnTextChangeListener(object :OnTextChangeListener{
             override fun onTextChange(text: String?) {
                 Log.e("富文本文字变动", text.toString())

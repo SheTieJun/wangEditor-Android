@@ -15,7 +15,7 @@ import com.wangeditor.android.toolbar.R
  */
 class RichItem_AlignLeft: IRichItem() {
     override fun getType(): String {
-        return RichType.JustifyRight.name
+        return RichType.JustifyLeft.name
     }
 
     override fun onClick() {

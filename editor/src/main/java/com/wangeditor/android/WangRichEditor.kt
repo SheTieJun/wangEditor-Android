@@ -1,7 +1,6 @@
 package com.wangeditor.android
 
 import android.R.attr
-import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
@@ -10,12 +9,9 @@ import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.net.http.SslError
-import android.os.Build.VERSION
-import android.os.Build.VERSION_CODES
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.View
-import android.view.animation.LinearInterpolator
 import android.webkit.SslErrorHandler
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
@@ -26,6 +22,7 @@ import com.wangeditor.android.RichUtils.initKeyboard
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 import java.util.concurrent.CopyOnWriteArrayList
+import org.json.JSONArray
 
 
 open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
@@ -42,7 +39,7 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
     }
 
     interface OnDecorationStateListener {
-        fun onStateChangeListener(text: String, types: List<RichType>)
+        fun onStateChangeListener(types: List<StyleItem>)
     }
 
     interface AfterInitialLoadListener {
@@ -130,15 +127,26 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
 
     private fun stateCheck(text: String) {
         val state = text.replaceFirst(STATE_SCHEME.toRegex(), "")
-        val types: MutableList<RichType> = ArrayList()
-        for (type in RichType.values()) {
-            if (TextUtils.indexOf(state, type.name) != -1) {
-                types.add(type)
+        Utils.logInfo(state)
+        if (state.isEmpty()){
+            if (mDecorationStateListenerList != null) {
+                mDecorationStateListenerList!!.forEach {
+                    it.onStateChangeListener(emptyList())
+                }
             }
+            return
+        }
+        val jsonArray = JSONArray(state)
+        val length = jsonArray.length()
+        val types: MutableList<StyleItem> = ArrayList()
+        for (i in 0 until length){
+            val any = jsonArray.getJSONObject(i)
+            val item = StyleItem(any.optString("type"),any.get("value"))
+            types.add(item)
         }
         if (mDecorationStateListenerList != null) {
             mDecorationStateListenerList!!.forEach {
-                it.onStateChangeListener(state, types)
+                it.onStateChangeListener(types)
             }
         }
     }
@@ -202,7 +210,6 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
     }
 
     override fun setPaddingRelative(start: Int, top: Int, end: Int, bottom: Int) {
-        // still not support RTL.
         setPadding(start, top, end, bottom)
     }
 
@@ -261,22 +268,6 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
         exec("javascript:RE.setInputEnabled($inputEnabled)")
     }
 
-    /**
-     * 动态添加css
-     * @param cssFile
-     */
-    fun loadCSS(cssFile: String) {
-        val jsCSSImport = "(function() {" +
-                "    var head  = document.getElementsByTagName(\"head\")[0];" +
-                "    var link  = document.createElement(\"link\");" +
-                "    link.rel  = \"stylesheet\";" +
-                "    link.type = \"text/css\";" +
-                "    link.href = \"" + cssFile + "\";" +
-                "    link.media = \"all\";" +
-                "    head.appendChild(link);" +
-                "}) ();"
-        exec("javascript:$jsCSSImport")
-    }
 
     fun undo() {
         exec("javascript:RE.undo();")
@@ -475,17 +466,9 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
 
     protected fun exec(trigger: String) {
         if (isReady) {
-            load(trigger)
-        } else {
-            postDelayed({ exec(trigger) }, 100)
-        }
-    }
-
-    private fun load(trigger: String) {
-        if (VERSION.SDK_INT >= VERSION_CODES.KITKAT) {
             evaluateJavascript(trigger, null)
         } else {
-            loadUrl(trigger)
+            postDelayed({ exec(trigger) }, 100)
         }
     }
 
@@ -543,26 +526,6 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
         }
     }
 
-    private var mHeight = 0
-
-    //实例化WebViwe后，调用此方法可滚动到底部
-    fun scrollToBottom() {
-        val temp = computeVerticalScrollRange()
-        val valueAnimator = ValueAnimator.ofInt(height, temp)
-        valueAnimator.interpolator = LinearInterpolator()
-        valueAnimator.duration = 200
-        valueAnimator.addUpdateListener { animation: ValueAnimator ->
-            val nowHeight = animation.animatedValue as Int
-            mHeight = nowHeight
-            scrollTo(0, height)
-            if (height == temp) {
-                //再调用一次，解决不能滑倒底部
-                scrollTo(0, computeVerticalScrollRange())
-            }
-        }
-        valueAnimator.start()
-    }
-
     override fun destroy() {
         mDecorationStateListenerList?.clear()
         mTextChangeListenerList?.clear()
@@ -570,7 +533,6 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
     }
 
     companion object {
-        //wang_editor.html
         private const val TAG = "RichEditor"
         private const val SETUP_HTML = "file:///android_asset/wang_editor.html"
         private const val CALLBACK_SCHEME = "re-callback://"

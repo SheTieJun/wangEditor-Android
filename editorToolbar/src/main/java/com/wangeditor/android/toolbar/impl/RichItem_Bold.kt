@@ -28,10 +28,8 @@ class RichItem_Bold: IRichItem() {
     override fun buildView(): View {
         return ImageView(mWangEditor!!.context).apply {
             layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.MATCH_PARENT)
-            scaleType = CENTER_INSIDE
-            setImageResource(R.drawable.selector_note_bold_2)
+            setImageResource(R.drawable.selector_note_bold)
             setPadding(15)
-
         }
     }
 }

@@ -11,21 +11,23 @@
 
 > 4.`wangEditor`功能很全，但是我只懂皮毛的`js`和`html`，所以我这里只用到**部分**的功能，也有一些功能被我移除了,我用的是`simple`
 
->mode: 'default' 默认模式 - 集成了`wangEditor`所有功能
-> 
+> mode: 'default' 默认模式 - 集成了`wangEditor`所有功能
+>
 >mode: 'simple' 简洁模式 - 仅有部分常见功能，但更加简洁易用
 
-> 缺点：`wang_editor_index.js`体积太大，功能内容太多，已我的知识储备无法进行优化简化
+> 缺点：`wang_editor_index.js`体积太大，功能内容太多，已我的知识储备无法进行优化简化,同时不支持低版本chrome
 >
 > 优化：`wangEditor`功能齐全强大，后续可以功能同步web
 
-## 支持的功能 Supported Functions 
+## 支持的功能 Supported Functions
+
 - [X] Bold
 - [X] Italic
 - [X] Subscript
 - [X] Superscript
 - [X] Strikethrough
 - [X] Underline
+- [ ] Delete Line
 - [X] Justify Left
 - [X] Justify Center
 - [X] Justify Right
@@ -46,36 +48,38 @@
 - [X] Text Font Size
 - [X] Unordered List (Bullets)
 - [X] Ordered List (Numbers)
-- [X] Cursor Color 光标颜色  ，和 Android光标下的小圆点按钮颜色是通过主题修改的
+- [X] Cursor Color 光标颜色 ，和 Android光标下的小圆点按钮颜色是通过主题修改的
 - [X] removeFormat 清除选中文本的格式，不可以清除heading
 
-
 ## Default Setting for Editor
+
 ### Height
+
 ``` 
 editor.setEditorHeight(200);  //dp = html px
 ```
 
 ### Font
+
 ``` 
 editor.setEditorFontSize(22);  //android dp = html px
 editor.setEditorFontColor(Color.RED);
 ```
+
 ### Background
+
 ``` 
 editor.setEditorBackgroundColor(Color.BLUE);
-editor.setBackgroundColor(Color.BLUE);
-editor.setBackgroundResource(R.drawable.bg);
-editor.setBackground(url);
 ```
 
 ### Padding
+
 ``` 
 editor.setPadding(10, 10, 10, 10); //android dp = html px
 ```
 
-
 ## 键盘监听
+
 `initKeyboardChange`，可以自行重写使用
 
 > 主要是为了修复打开键盘的时候，无法自动滚到选中的位置
@@ -86,16 +90,32 @@ editor.setPadding(10, 10, 10, 10); //android dp = html px
 - 关闭键盘时，清除焦点
 
 ## 工具栏实现
-TODO: 
-- [ ] 动态绑定工具栏
-- [ ] 动态添加工具
-- [ ] 通过接口实现，代理、模板模式
 
+```XML
+<com.wangeditor.android.toolbar.RichEditorToolbar 
+    android:id="@+id/editToolbar" 
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+```
+
+```Kotlin
+editToolbar.initTextStyle()
+editToolbar.initFunStyle()
+editToolbar.initParagraphStyle()
+editToolbar.initMedia()
+```
+1. 可以自己选择添加对应工具，也可以自己自定义item,item的view可以自己决定是Textview/Imageview/ViewGroup
+2. 可以添加多个toolbar 控制一个editor
 
 ## 链接项目
+
 - API参考项目：[richeditor-android](https://github.com/wasabeef/richeditor-android)
 
 - 核心内容：[wangeditor](https://www.wangeditor.com/v5/API.html)
+
+
+## 修改Android System WebView
+[android-system-webview.APK](https://www.apkmirror.com/apk/google-inc/android-system-webview/android-system-webview-89-0-4389-90-release/android-system-webview-89-0-4389-90-3-android-apk-download/?redirected=thank_you_invalid_nonce)
 
 
 ### 如果对你们有帮助就star一下吧

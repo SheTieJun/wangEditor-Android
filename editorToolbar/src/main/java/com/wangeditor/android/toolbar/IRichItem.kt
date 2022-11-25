@@ -10,6 +10,8 @@ abstract class IRichItem {
 
     protected var mWangEditor: WangRichEditor? = null
     private var mItemView: View? = null
+    protected var mCurrentValue: Any? = null
+    protected var mDefValue:Any = 1
 
     fun setEditor(editor: WangRichEditor) {
         this.mWangEditor = editor
@@ -19,7 +21,7 @@ abstract class IRichItem {
      * Get type 获取类型
      * @return
      */
-    abstract fun getType():String
+    abstract fun getType(): String
 
     /**
      * On click
@@ -34,7 +36,13 @@ abstract class IRichItem {
      * selector资源进行自动变换选中样式，如果不适用可以重写该方法进行变化样式
      * @param isSelected
      */
-    open fun updateSelected(isSelected: Boolean){
+    @JvmOverloads
+    open fun updateSelected(isSelected: Boolean, currentValue: Any? = null) {
+        if (isSelected){
+            this.mCurrentValue = currentValue
+        }else{
+            this.mCurrentValue = mDefValue
+        }
         getItemView().isSelected = isSelected
     }
 
@@ -54,7 +62,10 @@ abstract class IRichItem {
 
     protected abstract fun buildView(): View
 
-    open fun performClick(){
+
+    open fun getEditor() = mWangEditor!!
+
+    open fun performClick() {
         onClick()
     }
 }

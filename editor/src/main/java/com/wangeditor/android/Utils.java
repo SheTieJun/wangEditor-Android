@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Base64;
+import android.util.Log;
 import java.io.ByteArrayOutputStream;
 
 /**
@@ -15,8 +16,15 @@ import java.io.ByteArrayOutputStream;
 
 public final class Utils {
 
+    private static boolean debug = false;
+
     private Utils() throws InstantiationException {
         throw new InstantiationException("This class is not for instantiation");
+    }
+
+
+    public static void isDebug(boolean isDebug) {
+        debug = isDebug;
     }
 
     public static String toBase64(Bitmap bitmap) {
@@ -54,5 +62,10 @@ public final class Utils {
     }
 
 
+    public static void logInfo(String info) {
+        if (debug){
+            Log.i("WangRichEditor", info);
+        }
+    }
 
 }

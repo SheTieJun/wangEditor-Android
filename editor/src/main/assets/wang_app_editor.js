@@ -1,4 +1,9 @@
-const { SlateEditor, SlateTransforms, SlateText, DomEditor } = window.wangEditor
+const {
+    SlateEditor,
+    SlateTransforms,
+    SlateText,
+    DomEditor
+} = window.wangEditor
 
 var RE = {};
 
@@ -169,17 +174,18 @@ RE.setCode = function () {
         // 插入 pre 节点
         const newPreNode = {
             type: 'pre',
-            children: [
-                {
-                    type: 'code',
-                    language: 'Java',
-                    children: [
-                        { text: codeS }, // 选中节点的纯文本
-                    ],
-                },
-            ],
+            children: [{
+                type: 'code',
+                language: 'Java',
+                children: [{
+                        text: codeS
+                    }, // 选中节点的纯文本
+                ],
+            }, ],
         }
-        SlateTransforms.insertNodes(editor, newPreNode, { mode: 'highest' })
+        SlateTransforms.insertNodes(editor, newPreNode, {
+            mode: 'highest'
+        })
     }
 }
 
@@ -188,7 +194,9 @@ RE.setBlockquote = function () {
     var active = this.isActive('blockquote')
     var newType = active ? 'paragraph' : 'blockquote'
     console.log(newType + '//' + active)
-    SlateTransforms.setNodes(editor, { type: newType })
+    SlateTransforms.setNodes(editor, {
+        type: newType
+    })
 }
 
 isDisabledBlockquote = function () {
@@ -280,7 +288,9 @@ RE.insertImage = function (url, alt) {
         style: {
             width: '100%'
         },
-        children: [{ text: alt }]
+        children: [{
+            text: alt
+        }]
     };
     RE.editor.insertNode(image);
 }
@@ -293,7 +303,9 @@ RE.insertImageW = function (url, alt, width) {
         style: {
             width: width
         },
-        children: [{ text: alt }]
+        children: [{
+            text: alt
+        }]
     };
     RE.editor.insertNode(image);
 }
@@ -309,7 +321,9 @@ RE.insertImageWH = function (url, alt, width, height) {
             width: width,
             height: height
         },
-        children: [{ text: alt }]
+        children: [{
+            text: alt
+        }]
     };
     RE.editor.insertNode(image)
 }
@@ -322,7 +336,9 @@ RE.insertVideo = function (url, alt) {
         style: {
             width: '100%',
         },
-        children: [{ text: '' }]
+        children: [{
+            text: ''
+        }]
     };
     RE.editor.insertNode(video)
 }
@@ -335,7 +351,9 @@ RE.insertVideoW = function (url, width) {
         style: {
             width: width
         },
-        children: [{ text: '' }]
+        children: [{
+            text: ''
+        }]
     };
     RE.editor.insertNode(video)
 }
@@ -349,13 +367,15 @@ RE.insertVideoWH = function (url, width, height) {
             width: width,
             height: height
         },
-        children: [{ text: '' }]
+        children: [{
+            text: ''
+        }]
     };
     RE.editor.insertNode(video)
 }
 
 RE.insertAudio = function (url, alt) {
-   RE.reFocus()
+    RE.reFocus()
     var audio = {
         type: 'audio',
         src: url
@@ -379,7 +399,9 @@ RE.insertLink = function (url, defText) {
         type: 'link',
         url: url,
         target: "_blank",
-        children: [{ text: name }]
+        children: [{
+            text: name
+        }]
     };
     RE.editor.insertNode(image);
 }
@@ -399,7 +421,12 @@ RE.setTodo = function (text) {
 }
 
 RE.setDivider = function () {
-    var elem = { type: 'divider', children: [{ text: '' }] }
+    var elem = {
+        type: 'divider',
+        children: [{
+            text: ''
+        }]
+    }
     RE.editor.insertNode(elem)
 }
 
@@ -429,26 +456,55 @@ RE.editor.on('change', function () {
     var editStyle = SlateEditor.marks(RE.editor)
     var items = [];
     if (editStyle.bold) {
-        items.push('Bold');
+        var item = {
+            type: 'Bold',
+            value: null
+        }
+        items.push(item);
     }
     if (editStyle.italic) {
-        items.push('Italic');
+        var item = {
+            type: 'Italic',
+            value: null
+        }
+        items.push(item);
     }
     if (editStyle.sub) {
-        items.push('SubScript');
+        var item = {
+            type: 'SubScript',
+            value: null
+        }
+        items.push(item);
+ 
     }
     if (editStyle.sup) {
-        items.push('SuperScript');
+        var item = {
+            type: 'SuperScript',
+            value: null
+        }
+        items.push(item);
     }
     if (editStyle.underline) {
-        items.push('UnderLine');
+        var item = {
+            type: 'UnderLine',
+            value: null
+        }
+        items.push(item);
     }
     if (editStyle.through) {
-        items.push('Through');
+        var item = {
+            type: 'Through',
+            value: null
+        }
+        items.push(item);
     }
 
-   if (editStyle.divider) {
-        items.push('Divider');
+    if (editStyle.divider) {
+        var item = {
+            type: 'Divider',
+            value: null
+        }
+        items.push(item);
     }
 
     const fragment = editor.getFragment()
@@ -456,64 +512,131 @@ RE.editor.on('change', function () {
     if (fragment != null) {
         var type = fragment[0].type
         if (type == "header1") {
-            items.push('header1');
+            var item = {
+                type: 'Header',
+                value: 1,
+            }
+            items.push(item);
         }
         if (type == "header2") {
-            items.push('header2');
+            var item = {
+                type: 'Header',
+                value: 2
+            }
+            items.push(item);
         }
         if (type == "header3") {
-            items.push('header3');
+            var item = {
+                type: 'Header',
+                value: 3
+            }
+            items.push(item);
         }
         if (type == "header4") {
-            items.push('header4');
+            var item = {
+                type: 'Header',
+                value: 4
+            }
+            items.push(item);
         }
         if (type == "header5") {
-            items.push('header5');
+            var item = {
+                type: 'Header',
+                value: 5
+            }
+            items.push(item);
         }
         if (type == "header6") {
-            items.push('header6');
+            var item = {
+                type: 'Header',
+                value: 6
+            }
+            items.push(item);
         }
         if (type == "list-item" && fragment[0].ordered == true) {
-            items.push('NumberList');
+            var item = {
+                type: 'NumberList',
+                value: null
+            }
+            items.push(item);
         }
         if (type == "list-item" && fragment[0].ordered == false) {
-            items.push('BulletsList');
+            var item = {
+                type: 'BulletsList',
+                value: null
+            }
+            items.push(item);
         }
         if (type == "todo") {
-            items.push('Todo');
+            var item = {
+                type: 'Todo',
+                value: null
+            }
+            items.push(item);
         }
 
         if (type == 'pre' && fragment[0] != null) {
             if (fragment[0].children[0].type == 'code') {
-                items.push('Code');
+                var item = {
+                    type: 'Code',
+                    value: null
+                }
+                items.push(item);
             }
         }
 
         var textAlign = fragment[0].textAlign
         if (textAlign == "center") {
-            items.push('JustifyCenter');
+            var item = {
+                type: 'JustifyCenter',
+                value: null
+            }
+            items.push(item);
         }
         if (textAlign == "left") {
-            items.push('JustifyLeft');
+            var item = {
+                type: 'JustifyLeft',
+                value: null
+            }
+            items.push(item);
         }
         if (textAlign == "right") {
-            items.push('JustifyRight');
+            var item = {
+                type: 'JustifyRight',
+                value: null
+            }
+            items.push(item);
         }
         if (textAlign == "justify") {
-            items.push('JustifyFull');
+            var item = {
+                type: 'JustifyFull',
+                value: null
+            }
+            items.push(item);
         }
 
         //判断是否有缩进
         var indent = fragment[0].indent
         if (indent == '2em') {
-            items.push('Indent');
+            var item = {
+                type: 'Indent',
+                value: null
+            }
+            items.push(item);
+        }
+
+        var fontSize = fragment[0].fontSize
+        if (fontSize!=null) {
+            var item = {
+              type: 'FontSize',
+              value: parseInt(fontSize.replace("px",""))
+            }
+            items.push(item);
         }
 
     }
-    window.location.href = "re-state://" + encodeURI(items.join(','));
+    window.location.href = "re-state://" + encodeURI(JSON.stringify(items));
     window.location.href = "re-callback://" + encodeURIComponent(RE.getHtml());
     console.log(editStyle)
     console.log(fragment)
 })
-
-

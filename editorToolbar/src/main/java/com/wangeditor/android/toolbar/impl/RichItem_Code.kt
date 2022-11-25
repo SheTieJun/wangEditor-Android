@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.core.view.setPadding
 import com.wangeditor.android.RichType
 import com.wangeditor.android.toolbar.IRichItem
+import com.wangeditor.android.toolbar.R
 
 /**
  *
@@ -23,11 +24,10 @@ class RichItem_Code: IRichItem() {
     }
 
     override fun buildView(): View {
-        return TextView(mWangEditor!!.context).apply {
+        return ImageView(mWangEditor!!.context).apply {
             layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.MATCH_PARENT)
-//            scaleType = CENTER_INSIDE
             setPadding(15)
-            text = getType()
+            setImageResource(R.drawable.note_icon_code)
         }
     }
 }
