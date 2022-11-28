@@ -27,11 +27,10 @@
 - [X] Superscript
 - [X] Strikethrough
 - [X] Underline
-- [ ] Delete Line
 - [X] Justify Left
 - [X] Justify Center
 - [X] Justify Right
-- [X] Heading 1、2、3 、4、5、6
+- [X] Heading 1、2、3 、4、5、6 
 - [X] Undo
 - [X] Redo
 - [X] Indent
@@ -40,7 +39,7 @@
 - [X] Code, 如果是设置选择文本使用code，会清除其他格式只保留文本
 - [X] Insert Image
 - [X] Insert Video
-- [X] Insert Audio
+- [ ] Insert Audio : 编辑器不支持~
 - [X] Insert Link
 - [x] Checkbox：【Todo】
 - [X] Text Color
@@ -50,6 +49,7 @@
 - [X] Ordered List (Numbers)
 - [X] Cursor Color 光标颜色 ，和 Android光标下的小圆点按钮颜色是通过主题修改的
 - [X] removeFormat 清除选中文本的格式，不可以清除heading
+- [ ] Table :编辑器支持，后面可以看情况加入，感觉手机上可能用不到
 
 ## Default Setting for Editor
 

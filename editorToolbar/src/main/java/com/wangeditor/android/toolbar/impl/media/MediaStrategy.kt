@@ -1,7 +1,6 @@
-package com.wangeditor.android.toolbar.media
+package com.wangeditor.android.toolbar.impl.media
 
 import com.wangeditor.android.toolbar.IRichItem
-import com.wangeditor.android.toolbar.impl.RichItem_Image
 
 interface MediaStrategy {
 
@@ -11,6 +10,6 @@ interface MediaStrategy {
      * when selected can use [RichItem_Image.insertMedia]
      * @param iRichItem
      */
-    fun startSelectMedia(iRichItem: IRichItem)
+    fun startSelectMedia(iRichItem: AbRichItem_Media)
 
 }

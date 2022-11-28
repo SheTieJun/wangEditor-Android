@@ -8,12 +8,13 @@ import android.widget.TextView
 import androidx.core.view.setPadding
 import com.wangeditor.android.RichType
 import com.wangeditor.android.toolbar.IRichItem
+import com.wangeditor.android.toolbar.R
 
 /**
  *
  * checkBox
  */
-class RichItem_Divider: IRichItem() {
+class RichItem_Divider : IRichItem() {
     override fun getType(): String {
         return RichType.Divider.name
     }
@@ -23,11 +24,11 @@ class RichItem_Divider: IRichItem() {
     }
 
     override fun buildView(): View {
-        return TextView(mWangEditor!!.context).apply {
-            layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.MATCH_PARENT)
-//            scaleType = CENTER_INSIDE
+        return ImageView(mWangEditor!!.context).apply {
+            layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT)
+            scaleType = CENTER_INSIDE
+            setImageResource(R.drawable.note_icon_divider)
             setPadding(15)
-            text = getType()
         }
     }
 }

@@ -1,12 +1,15 @@
 package com.wangeditor.android
 
-import android.app.Activity
 import android.content.res.Resources
 import android.graphics.Rect
 import android.text.TextUtils
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.Window
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle.Event
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import java.util.regex.Pattern
 
 /**
@@ -63,39 +66,46 @@ object RichUtils {
 
 
     @JvmStatic
-    fun initKeyboard(activity: Activity,onKeyboardHide:() ->Unit,onKeyboardShow:()->Unit) {
+    fun initKeyboard(activity: FragmentActivity,onKeyboardHide:() ->Unit,onKeyboardShow:()->Unit) {
         val mLayoutDelay = 0
         var mPreviousKeyboardHeight = 0
         var mKeyboardHeight = 0
         val window: Window = activity.window
         val rootView = window.decorView.findViewById<View>(android.R.id.content)
-        rootView.viewTreeObserver.addOnGlobalLayoutListener(
-            object : OnGlobalLayoutListener {
-                override fun onGlobalLayout() {
-                    if (mLayoutDelay == 0) {
-                        init()
-                        return
-                    }
-                    rootView.postDelayed({ init() }, mLayoutDelay.toLong())
-                }
 
-                private fun init() {
-                    val r = Rect()
-                    val view = window.decorView
-                    view.getWindowVisibleDisplayFrame(r)
-                    val screenHeight = Resources.getSystem().displayMetrics.heightPixels
-                    val keyboardHeight = screenHeight - r.bottom
-                    if (mPreviousKeyboardHeight != keyboardHeight) {
-                        if (keyboardHeight > 100) {
-                            mKeyboardHeight = keyboardHeight
-                            onKeyboardShow()
-                        } else {
-                            onKeyboardHide()
-                        }
-                    }
-                    mPreviousKeyboardHeight = keyboardHeight
+        val listener = object : OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                if (mLayoutDelay == 0) {
+                    init()
+                    return
                 }
-            })
+                rootView.postDelayed({ init() }, mLayoutDelay.toLong())
+            }
+            private fun init() {
+                val r = Rect()
+                val view = window.decorView
+                view.getWindowVisibleDisplayFrame(r)
+                val screenHeight = Resources.getSystem().displayMetrics.heightPixels
+                val keyboardHeight = screenHeight - r.bottom
+                if (mPreviousKeyboardHeight != keyboardHeight) {
+                    if (keyboardHeight > 100) {
+                        mKeyboardHeight = keyboardHeight
+                        onKeyboardShow()
+                    } else {
+                        onKeyboardHide()
+                    }
+                }
+                mPreviousKeyboardHeight = keyboardHeight
+            }
+        }
+        rootView.viewTreeObserver.addOnGlobalLayoutListener(listener)
+        activity.lifecycle.addObserver(object :LifecycleEventObserver{
+            override fun onStateChanged(source: LifecycleOwner, event: Event) {
+                if (event == Event.ON_DESTROY){
+                    rootView.viewTreeObserver.removeOnGlobalLayoutListener(listener)
+                }
+            }
+        })
     }
 
 

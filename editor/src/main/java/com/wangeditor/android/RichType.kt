@@ -8,6 +8,8 @@ enum class RichType {
     SuperScript,
     StrikeThrough,
     FontSize,//字体大小
+    FontColor,//字体大小
+    TextBgColor,//背景颜色
     UnderLine,//下滑先
     Header,//header
     

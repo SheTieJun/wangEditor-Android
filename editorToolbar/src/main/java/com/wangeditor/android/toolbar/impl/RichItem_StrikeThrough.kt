@@ -10,25 +10,22 @@ import com.wangeditor.android.RichType
 import com.wangeditor.android.toolbar.IRichItem
 import com.wangeditor.android.toolbar.R
 
-/**
- *
- * checkBox
- */
-class RichItem_BlockQuote: IRichItem() {
+
+class RichItem_StrikeThrough : IRichItem() {
     override fun getType(): String {
-        return RichType.BlockQuote.name
+        return RichType.StrikeThrough.name
     }
 
     override fun onClick() {
-        mWangEditor?.setBlockquote()
+        mWangEditor?.setStrikeThrough()
     }
 
     override fun buildView(): View {
         return ImageView(mWangEditor!!.context).apply {
-            layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.MATCH_PARENT)
+            layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT)
             scaleType = CENTER_INSIDE
-            setImageResource(R.drawable.selector_note_blockquote)
             setPadding(15)
+            setImageResource(R.drawable.selector_note_stikethrough)
         }
     }
 }

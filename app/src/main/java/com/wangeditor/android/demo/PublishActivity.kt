@@ -12,28 +12,25 @@ import android.view.View
 import android.view.View.OnClickListener
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import com.wangeditor.android.RichType
 import com.wangeditor.android.WangRichEditor.OnTextChangeListener
-import com.wangeditor.android.RichUtils
-import com.wangeditor.android.WangRichEditor.OnDecorationStateListener
 import com.wangeditor.android.demo.R.id
-import com.wangeditor.android.demo.R.mipmap
 import com.wangeditor.android.demo.databinding.ActivityPublishBinding
-import com.wangeditor.android.toolbar.IRichItem
+import com.wangeditor.android.toolbar.impl.media.AbRichItem_Media
 import com.wangeditor.android.toolbar.initFunStyle
 import com.wangeditor.android.toolbar.initMedia
 import com.wangeditor.android.toolbar.initParagraphStyle
 import com.wangeditor.android.toolbar.initTextStyle
-import com.wangeditor.android.toolbar.media.MediaStrategy
-import me.shetj.base.R.color
+import com.wangeditor.android.toolbar.impl.media.MediaStrategy
 import me.shetj.base.ktx.selectFile
 import me.shetj.base.ktx.showToast
 
 class PublishActivity : AppCompatActivity(), OnClickListener {
     var binding: ActivityPublishBinding? = null
-    private var isFrom //0:表示正常编辑  1:表示是重新编辑
-            = 0
+
+    //0:表示正常编辑  1:表示是重新编辑
+    private var isFrom = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,33 +52,36 @@ class PublishActivity : AppCompatActivity(), OnClickListener {
         binding!!.richEditor.setEditorBackgroundColor(Color.WHITE)
         //输入框文本padding
         binding!!.richEditor.setPadding(20, 0, 20, 0)
-        //输入提示文本
-        binding!!.richEditor.setPlaceholder("请开始你的创作！~")
         //监听键盘，打开键盘的时候滚动选中位置
-        binding!!.richEditor.initKeyboardChange(this)
-        //文本输入框监听事件
+        binding!!.richEditor.initKeyboardChange(this, onKeyboardHide = {
+//            binding!!.bottomBar.isVisible = false
+        }, onKeyboardShow = {
+//            binding!!.bottomBar.isVisible = true
+        })
         binding!!.editToolbar.setEditor(binding!!.richEditor)
+
         binding!!.editToolbar.initTextStyle()
         binding!!.editToolbar.initFunStyle()
         binding!!.editToolbar.initMedia()
         binding!!.editToolbar.initParagraphStyle()
-        binding!!.editToolbar.setMediaStrategy(object :MediaStrategy{
-            override fun startSelectMedia(iRichItem: IRichItem) {
-                when(iRichItem.getType()){
-                    RichType.Video.name ->{
-                        "选择视频".showToast()
+
+        binding!!.editToolbar.setMediaStrategy(object : MediaStrategy {
+            override fun startSelectMedia(iRichItem: AbRichItem_Media) {
+                when (iRichItem.getType()) {
+                    RichType.Video.name, RichType.Image.name -> {
+                        selectFile(type = iRichItem.getMimeType()) {
+                            it?.let {
+                                iRichItem.insertMedia(it.toString())
+                            }
+                        }
                     }
-                    RichType.Audio.name ->{
-                        "选择音频".showToast()
+                    else -> {
+                        "暂不支持${iRichItem.getType()}类型".showToast()
                     }
-                    RichType.Image.name ->{
-                        "选择图片".showToast()
-                    }
-                    else->{}
                 }
             }
         })
-        binding!!.richEditor.addOnTextChangeListener(object :OnTextChangeListener{
+        binding!!.richEditor.addOnTextChangeListener(object : OnTextChangeListener {
             override fun onTextChange(text: String?) {
                 Log.e("富文本文字变动", text.toString())
                 if (TextUtils.isEmpty(binding!!.editName.text.toString().trim { it <= ' ' })) {
@@ -154,11 +154,6 @@ class PublishActivity : AppCompatActivity(), OnClickListener {
             id.button_rich_undo ->                 //撤销
                 binding!!.richEditor.undo()
         }
-    }
-
-    private fun againEdit() {
-        //如果第一次点击例如加粗，没有焦点时，获取焦点并弹出软键盘
-        binding!!.richEditor.focusEditor()
     }
 
     companion object {

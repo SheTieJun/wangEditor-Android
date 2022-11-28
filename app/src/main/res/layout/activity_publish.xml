@@ -41,8 +41,8 @@
                 android:onClick="onClick"
                 android:paddingLeft="@dimen/dp_15"
                 android:paddingRight="@dimen/dp_10"
-                android:text="发布"
-                android:textColor="@color/blackSecondText"
+                android:text="保存"
+                android:textColor="@color/enable_text_color"
                 android:textSize="@dimen/sp_16" />
 
 
@@ -114,7 +114,7 @@
             android:id="@+id/button_rich_undo"
             android:layout_width="@dimen/dp_30"
             android:layout_height="@dimen/dp_30"
-            android:layout_marginLeft="@dimen/dp_20"
+            android:layout_marginLeft="@dimen/dp_10"
             android:onClick="onClick"
             android:padding="@dimen/dp_4"
             android:src="@mipmap/rich_undo" />
@@ -124,8 +124,8 @@
             android:id="@+id/button_rich_do"
             android:layout_width="@dimen/dp_30"
             android:layout_height="@dimen/dp_30"
-            android:layout_marginLeft="@dimen/dp_20"
-            android:layout_marginRight="@dimen/dp_20"
+            android:layout_marginLeft="@dimen/dp_10"
+            android:layout_marginRight="@dimen/dp_10"
             android:onClick="onClick"
             android:padding="@dimen/dp_4"
             android:src="@mipmap/rich_do" />

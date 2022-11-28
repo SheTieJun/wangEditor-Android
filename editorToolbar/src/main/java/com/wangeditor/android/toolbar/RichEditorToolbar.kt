@@ -9,7 +9,8 @@ import com.wangeditor.android.RichType
 import com.wangeditor.android.StyleItem
 import com.wangeditor.android.WangRichEditor
 import com.wangeditor.android.WangRichEditor.OnDecorationStateListener
-import com.wangeditor.android.toolbar.media.MediaStrategy
+import com.wangeditor.android.toolbar.impl.media.AbRichItem_Media
+import com.wangeditor.android.toolbar.impl.media.MediaStrategy
 
 /**
  * 富文本工具栏
@@ -21,7 +22,7 @@ open class RichEditorToolbar @JvmOverloads constructor(
     private var mEditor: WangRichEditor? = null
     private var mItems = mutableSetOf<IRichItem>()
     private var linearLayout:LinearLayout
-    private var mMediaStrategy:MediaStrategy ?=null
+    private var mMediaStrategy: MediaStrategy?=null
 
     init {
         linearLayout = LinearLayout(context)

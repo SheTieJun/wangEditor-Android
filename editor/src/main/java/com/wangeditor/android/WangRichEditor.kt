@@ -18,6 +18,8 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.core.content.ContextCompat.startActivity
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.MutableLiveData
 import com.wangeditor.android.RichUtils.initKeyboard
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
@@ -29,9 +31,7 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
     context: Context,
     attrs: AttributeSet?,
     defStyleAttr: Int
-) : WebView(context, attrs, defStyleAttr) {
-
-
+) : WebView(context, attrs, defStyleAttr), IEditorWeb {
 
 
     interface OnTextChangeListener {
@@ -67,13 +67,14 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
         settings.javaScriptEnabled = true
         webChromeClient = WebChromeClient()
         webViewClient = createWebviewClient()
+        addJavascriptInterface(EditorJSBridge(this), "WreApp")
         loadUrl(SETUP_HTML)
         setWebContentsDebuggingEnabled(true)
     }
 
     private fun addOnLayoutChangeUpdateHeight() {
         addOnLayoutChangeListener { v: View?, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int ->
-            val dp = px2dp(height.toFloat())
+            val dp = Utils.px2dp(height.toFloat())
             if (dp == 0) return@addOnLayoutChangeListener
             setEditorHeight(dp)
         }
@@ -88,27 +89,27 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
         if (mTextChangeListenerList == null) {
             mTextChangeListenerList = CopyOnWriteArrayList()
         }
-        if (!mTextChangeListenerList!!.contains(listener)){
+        if (!mTextChangeListenerList!!.contains(listener)) {
             mTextChangeListenerList?.add(listener)
             listener.onTextChange(mContents)
         }
     }
 
-    fun removeTextChangeListener(listener: OnTextChangeListener){
+    fun removeTextChangeListener(listener: OnTextChangeListener) {
         mTextChangeListenerList?.remove(listener)
     }
 
     fun addOnDecorationChangeListener(listener: OnDecorationStateListener) {
-        if (mDecorationStateListenerList == null){
+        if (mDecorationStateListenerList == null) {
             mDecorationStateListenerList = CopyOnWriteArrayList()
         }
-        if (!mDecorationStateListenerList!!.contains(listener)){
+        if (!mDecorationStateListenerList!!.contains(listener)) {
             mDecorationStateListenerList!!.add(listener)
         }
     }
 
 
-    fun removeDecorationChangeListener(listener: OnDecorationStateListener){
+    fun removeDecorationChangeListener(listener: OnDecorationStateListener) {
         mDecorationStateListenerList?.remove(listener)
     }
 
@@ -116,67 +117,19 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
         mLoadListener = listener
     }
 
-    private fun callback(text: String) {
-        mContents = text.replaceFirst(CALLBACK_SCHEME.toRegex(), "")
-        if (mTextChangeListenerList != null) {
-            mTextChangeListenerList!!.forEach {
-                it.onTextChange(mContents)
-            }
-        }
-    }
-
-    private fun stateCheck(text: String) {
-        val state = text.replaceFirst(STATE_SCHEME.toRegex(), "")
-        Utils.logInfo(state)
-        if (state.isEmpty()){
-            if (mDecorationStateListenerList != null) {
-                mDecorationStateListenerList!!.forEach {
-                    it.onStateChangeListener(emptyList())
-                }
-            }
-            return
-        }
-        val jsonArray = JSONArray(state)
-        val length = jsonArray.length()
-        val types: MutableList<StyleItem> = ArrayList()
-        for (i in 0 until length){
-            val any = jsonArray.getJSONObject(i)
-            val item = StyleItem(any.optString("type"),any.get("value"))
-            types.add(item)
-        }
-        if (mDecorationStateListenerList != null) {
-            mDecorationStateListenerList!!.forEach {
-                it.onStateChangeListener(types)
-            }
-        }
-    }
-
-
-    private var density = -1f
-        get() {
-            if (field <= 0f) {
-                field = Resources.getSystem().displayMetrics.density
-            }
-            return field
-        }
-
-
-    private fun px2dp(pxValue: Float): Int {
-        return (pxValue / density + 0.5f).toInt()
-    }
 
     /**
      *
      * @param contents
      */
-    fun setHtml(contents: String?){
-        mContents = if (contents.isNullOrEmpty()){
+    fun setHtml(contents: String?) {
+        mContents = if (contents.isNullOrEmpty()) {
             "<p><br><p>"
-        }else{
+        } else {
             contents
         }
         try {
-            exec("javascript:RE.setHtml('" + URLEncoder.encode(mContents?:"<p><br><p>", "UTF-8") + "');")
+            exec("javascript:RE.setHtml('" + URLEncoder.encode(mContents ?: "<p><br><p>", "UTF-8") + "');")
         } catch (e: UnsupportedEncodingException) {
             // No handling
         }
@@ -239,7 +192,7 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
         exec("javascript:RE.setBackgroundImage('url($url)');")
     }
 
-    fun setEditorCursorColor(color: Int){
+    fun setEditorCursorColor(color: Int) {
         val hex = convertHexColorString(color)
         exec("javascript:RE.setCaretColor('$hex');")
     }
@@ -258,10 +211,6 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
      */
     fun setEditorHeight(px: Int, needF: Boolean) {
         exec("javascript:RE.setHeight('" + px + "px'," + needF + ");")
-    }
-
-    fun setPlaceholder(placeholder: String) {
-        exec("javascript:RE.setPlaceholder('$placeholder');")
     }
 
     fun setInputEnabled(inputEnabled: Boolean) {
@@ -397,7 +346,7 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
     }
 
     fun insertVideo(url: String, width: Int) {
-        exec("javascript:RE.insertVideoW('$url', '$width');")
+        exec("javascript:RE.insertVideoW('$url', '${width}px');")
     }
 
     fun insertVideo(url: String, width: Int, height: Int) {
@@ -416,12 +365,12 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
         exec("javascript:RE.setTodo();")
     }
 
-    fun insertDivider(){
+    fun insertDivider() {
         exec("javascript:RE.setDivider();")
     }
 
 
-    fun insertCode(){
+    fun insertCode() {
         exec("javascript:RE.setCode();")
     }
 
@@ -436,12 +385,12 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
 
     private fun updateHeightByKeyboard() {
         if (isReady) {
-            val dp = px2dp(height.toFloat())
+            val dp = Utils.px2dp(height.toFloat())
             if (dp == 0) return
             setEditorHeight(dp, isFocused)
         } else {
             postDelayed({
-                val dp = px2dp(height.toFloat())
+                val dp = Utils.px2dp(height.toFloat())
                 if (dp == 0) return@postDelayed
                 setEditorHeight(dp, isFocused)
             }, 100)
@@ -452,11 +401,17 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
      * 添加键盘监听
      * @param activity
      */
-    open fun initKeyboardChange(activity: Activity?) {
-        initKeyboard(activity!!, {
+    open fun initKeyboardChange(
+        activity: FragmentActivity,
+        onKeyboardHide: (() -> Unit)? = null,
+        onKeyboardShow: (() -> Unit)? = null
+    ) {
+        initKeyboard(activity, {
             clearFocusEditor()
+            onKeyboardHide?.invoke()
         }) {
             postDelayed({ updateHeightByKeyboard() }, 50)
+            onKeyboardShow?.invoke()
         }
     }
 
@@ -489,17 +444,12 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
         @Deprecated("Deprecated in Java")
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
             val decode = Uri.decode(url)
-            if (TextUtils.indexOf(url, CALLBACK_SCHEME) == 0) {
-                callback(decode)
-                return true
-            } else if (TextUtils.indexOf(url, STATE_SCHEME) == 0) {
-                stateCheck(decode)
-                return true
-            } else if (url.startsWith("http")){
+            Utils.logInfo(decode)
+            if (url.startsWith("http")) {
                 val intent = Intent()
                 intent.action = "android.intent.action.VIEW"
                 intent.data = Uri.parse(url)
-                startActivity(context,intent,null)
+                startActivity(context, intent, null)
                 return true
             }
             return super.shouldOverrideUrlLoading(view, url)
@@ -508,23 +458,53 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
         override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
             val url = request.url.toString()
             val decode = Uri.decode(url)
-            println(decode)
-            if (TextUtils.indexOf(url, CALLBACK_SCHEME) == 0) {
-                callback(decode)
-                return true
-            } else if (TextUtils.indexOf(url, STATE_SCHEME) == 0) {
-                stateCheck(decode)
-                return true
-            } else if (url.startsWith("http")){
+            Utils.logInfo(decode)
+            if (url.startsWith("http")) {
                 val intent = Intent()
                 intent.action = "android.intent.action.VIEW"
                 intent.data = Uri.parse(url)
-                startActivity(context,intent,null)
+                startActivity(context, intent, null)
                 return true
             }
-            return  super.shouldOverrideUrlLoading(view, url)
+            return super.shouldOverrideUrlLoading(view, url)
         }
     }
+
+
+    private fun callback(richText: String) {
+        mContents = richText
+        if (mTextChangeListenerList != null) {
+            mTextChangeListenerList!!.forEach {
+                it.onTextChange(mContents)
+            }
+        }
+    }
+
+    private fun stateCheck(styleJson: String?) {
+        Utils.logInfo(styleJson)
+        if (styleJson.isNullOrEmpty()) {
+            if (mDecorationStateListenerList != null) {
+                mDecorationStateListenerList!!.forEach {
+                    it.onStateChangeListener(emptyList())
+                }
+            }
+            return
+        }
+        val jsonArray = JSONArray(styleJson)
+        val length = jsonArray.length()
+        val types: MutableList<StyleItem> = ArrayList()
+        for (i in 0 until length) {
+            val any = jsonArray.getJSONObject(i)
+            val item = StyleItem(any.optString("type"), any.opt("value"))
+            types.add(item)
+        }
+        if (mDecorationStateListenerList != null) {
+            mDecorationStateListenerList!!.forEach {
+                it.onStateChangeListener(types)
+            }
+        }
+    }
+
 
     override fun destroy() {
         mDecorationStateListenerList?.clear()
@@ -533,9 +513,16 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
     }
 
     companion object {
-        private const val TAG = "RichEditor"
         private const val SETUP_HTML = "file:///android_asset/wang_editor.html"
-        private const val CALLBACK_SCHEME = "re-callback://"
-        private const val STATE_SCHEME = "re-state://"
+    }
+
+    override fun onContentChange(richText: String?) {
+        Utils.logInfo(richText)
+        callback(richText ?: "")
+    }
+
+    override fun onStyleChange(styleJson: String?) {
+        Utils.logInfo(styleJson)
+        stateCheck(styleJson)
     }
 }

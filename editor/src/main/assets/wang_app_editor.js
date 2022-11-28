@@ -328,13 +328,14 @@ RE.insertImageWH = function (url, alt, width, height) {
     RE.editor.insertNode(image)
 }
 
-RE.insertVideo = function (url, alt) {
+RE.insertVideo = function (url) {
     RE.reFocus()
     var video = {
         type: 'video',
         src: url,
         style: {
-            width: '100%',
+            width: 'auto',
+            height: 'auto'
         },
         children: [{
             text: ''
@@ -475,7 +476,7 @@ RE.editor.on('change', function () {
             value: null
         }
         items.push(item);
- 
+
     }
     if (editStyle.sup) {
         var item = {
@@ -493,16 +494,31 @@ RE.editor.on('change', function () {
     }
     if (editStyle.through) {
         var item = {
-            type: 'Through',
+            type: 'StrikeThrough',
             value: null
         }
         items.push(item);
     }
-
-    if (editStyle.divider) {
+    if (editStyle.bgColor != null) {
+  
         var item = {
-            type: 'Divider',
-            value: null
+            type: 'TextBgColor',
+            value: editStyle.bgColor
+        }
+        items.push(item);
+    }
+
+    if (editStyle.color != null) {
+        var item = {
+            type: 'FontColor',
+            value: editStyle.color
+        }
+        items.push(item);
+    }
+    if (editStyle.fontSize != null) {
+        var item = {
+            type: 'FontSize',
+            value: parseInt(editStyle.fontSize.replace("px", ""))
         }
         items.push(item);
     }
@@ -575,6 +591,14 @@ RE.editor.on('change', function () {
             items.push(item);
         }
 
+        if (type == "blockquote") {
+            var item = {
+                type: 'BlockQuote',
+                value: null
+            }
+            items.push(item);
+        }
+
         if (type == 'pre' && fragment[0] != null) {
             if (fragment[0].children[0].type == 'code') {
                 var item = {
@@ -626,17 +650,18 @@ RE.editor.on('change', function () {
         }
 
         var fontSize = fragment[0].fontSize
-        if (fontSize!=null) {
+        if (fontSize != null) {
             var item = {
-              type: 'FontSize',
-              value: parseInt(fontSize.replace("px",""))
+                type: 'FontSize',
+                value: parseInt(fontSize.replace("px", ""))
             }
             items.push(item);
         }
 
     }
-    window.location.href = "re-state://" + encodeURI(JSON.stringify(items));
-    window.location.href = "re-callback://" + encodeURIComponent(RE.getHtml());
-    console.log(editStyle)
-    console.log(fragment)
+    window.WreApp.onContentChange(RE.getHtml());
+    window.WreApp.onStyleChange(JSON.stringify(items));
+    console.log(JSON.stringify(items))
+//    console.log(editStyle)
+    // console.log(fragment)
 })

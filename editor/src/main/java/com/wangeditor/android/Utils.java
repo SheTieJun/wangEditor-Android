@@ -1,13 +1,17 @@
 package com.wangeditor.android;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Display;
+import android.view.WindowManager;
 import java.io.ByteArrayOutputStream;
 
 /**
@@ -63,9 +67,40 @@ public final class Utils {
 
 
     public static void logInfo(String info) {
-        if (debug){
-            Log.i("WangRichEditor", info);
+        if (debug) {
+            Log.i("WREditor", info);
         }
+    }
+
+
+    private static float density = -1f;
+
+    private static float getDensity() {
+        if (density <= 0f) {
+            density = Resources.getSystem().getDisplayMetrics().density;
+        }
+        return density;
+    }
+
+
+    public static int px2dp(float pxValue) {
+        return (int) (pxValue / getDensity() + 0.5f);
+    }
+
+    public static int dp2px(float dpValue) {
+        return (int) (getDensity() * dpValue + 0.5);
+    }
+
+    public static int[] getScreenWidthAndHeight(Context context) {
+        Point outSize = new Point();
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = windowManager.getDefaultDisplay();
+        display.getSize(outSize);
+
+        int[] widthAndHeight = new int[2];
+        widthAndHeight[0] = outSize.x;
+        widthAndHeight[1] = outSize.y;
+        return widthAndHeight;
     }
 
 }

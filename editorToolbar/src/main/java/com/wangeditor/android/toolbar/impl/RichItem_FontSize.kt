@@ -3,13 +3,14 @@ package com.wangeditor.android.toolbar.impl
 import android.annotation.SuppressLint
 import android.view.View
 import android.widget.ImageView
-import android.widget.ImageView.ScaleType.CENTER_INSIDE
 import android.widget.LinearLayout.LayoutParams
-import android.widget.TextView
 import androidx.core.view.setPadding
 import com.wangeditor.android.RichType
+import com.wangeditor.android.Utils
 import com.wangeditor.android.toolbar.IRichItem
 import com.wangeditor.android.toolbar.R
+import com.wangeditor.android.toolbar.windows.FontSizeChangeListener
+import com.wangeditor.android.toolbar.windows.FontSizePickerWindow
 
 /**
  *
@@ -18,8 +19,8 @@ import com.wangeditor.android.toolbar.R
  * <b>@email：</b> 375105540@qq.com<br>
  * <b>@describe</b>  <br>
  */
-class RichItem_FontSize : IRichItem() {
-
+class RichItem_FontSize : IRichItem(), FontSizeChangeListener {
+    private var mFontPickerWindow: FontSizePickerWindow? = null
     init {
         mCurrentValue = 18
         mDefValue = 18
@@ -30,7 +31,16 @@ class RichItem_FontSize : IRichItem() {
     }
 
     override fun onClick() {
-        mWangEditor?.setFontSize(mCurrentValue as Int)
+        showFontSizePickerWindow()
+    }
+
+    private fun showFontSizePickerWindow() {
+        if (mFontPickerWindow == null) {
+            mFontPickerWindow = FontSizePickerWindow(mWangEditor!!.context, this)
+        }
+        mFontPickerWindow!!.setFontSize(mCurrentValue as Int)
+        val yOff: Int = Utils.dp2px(-5f)
+        mFontPickerWindow!!.showAsDropDown(getItemView(), 0, yOff)
     }
 
 
@@ -41,5 +51,9 @@ class RichItem_FontSize : IRichItem() {
             setPadding(15)
             setImageResource(R.drawable.note_icon_fontsize)
         }
+    }
+
+    override fun onFontSizeChange(fontSize: Int) {
+        mWangEditor!!.setFontSize(fontSize)
     }
 }
