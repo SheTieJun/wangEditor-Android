@@ -1,58 +1,74 @@
-package com.wangeditor.android.toolbar.windows;
+/*
+ * MIT License
+ *
+ * Copyright (c) 2022 SheTieJun
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+package com.wangeditor.android.toolbar.windows
 
-import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.PopupWindow;
-import com.wangeditor.android.Utils;
-import com.wangeditor.android.toolbar.R;
-import com.wangeditor.android.toolbar.windows.colorpicker.ColorPickerListener;
-import com.wangeditor.android.toolbar.windows.colorpicker.ColorPickerView;
+import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.PopupWindow
+import com.wangeditor.android.Utils
+import com.wangeditor.android.toolbar.R.layout
+import com.wangeditor.android.toolbar.windows.colorpicker.ColorPickerListener
+import com.wangeditor.android.toolbar.windows.colorpicker.ColorPickerView
 
-public class ColorPickerWindow extends PopupWindow {
+class ColorPickerWindow(private val mContext: Context, private val mColorPickerListener: ColorPickerListener) :
+    PopupWindow() {
+    private val colorPickerView: ColorPickerView
 
-    private Context mContext;
-
-    private ColorPickerView colorPickerView;
-
-    private ColorPickerListener mColorPickerListener;
-
-    public ColorPickerWindow(Context context, ColorPickerListener colorPickerListener) {
-        mContext = context;
-        mColorPickerListener = colorPickerListener;
-        this.colorPickerView = inflateContentView();
-        this.setContentView(this.colorPickerView);
-        int[] wh = Utils.getScreenWidthAndHeight(context);
-        this.setWidth(wh[0]);
-        int h = Utils.dp2px(50);
-        this.setHeight(h);
-        this.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        this.setOutsideTouchable(true);
-        this.setFocusable(false);
-        this.setupListeners();
+    init {
+        colorPickerView = inflateContentView()
+        this.contentView = colorPickerView
+        val wh = Utils.getScreenWidthAndHeight(mContext)
+        this.width = wh[0]
+        val h = Utils.dp2px(50f)
+        this.height = h
+        setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        this.isOutsideTouchable = true
+        this.isFocusable = false
+        setupListeners()
     }
 
-    private ColorPickerView inflateContentView() {
-        LayoutInflater layoutInflater = LayoutInflater.from(mContext);
-        ColorPickerView colorPickerView = (ColorPickerView) layoutInflater.inflate(R.layout.win_color_picker, null);
-        return colorPickerView;
+    private fun inflateContentView(): ColorPickerView {
+        val layoutInflater = LayoutInflater.from(mContext)
+        return layoutInflater.inflate(layout.win_color_picker, null) as ColorPickerView
     }
 
-    private <T extends View> T findViewById(int id) {
-        return colorPickerView.findViewById(id);
+    private fun <T : View?> findViewById(id: Int): T {
+        return colorPickerView.findViewById(id)
     }
 
-    public void setColor(int color) {
-        this.colorPickerView.setColor(color);
+    fun setColor(color: Int) {
+        colorPickerView.setColor(color)
     }
 
-    private void setupListeners() {
-        this.colorPickerView.setColorPickerListener(mColorPickerListener);
+    private fun setupListeners() {
+        colorPickerView.setColorPickerListener(mColorPickerListener)
     }
 
-    public void setBackgroundColor(int backgroundColor) {
-        this.colorPickerView.setBackgroundColor(backgroundColor);
+    fun setBackgroundColor(backgroundColor: Int) {
+        colorPickerView.setBackgroundColor(backgroundColor)
     }
 }

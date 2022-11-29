@@ -1,15 +1,35 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2022 SheTieJun
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package com.wangeditor.android
 
 import android.R.attr
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.net.http.SslError
-import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.View
 import android.webkit.SslErrorHandler
@@ -19,20 +39,17 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.MutableLiveData
 import com.wangeditor.android.RichUtils.initKeyboard
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 import java.util.concurrent.CopyOnWriteArrayList
 import org.json.JSONArray
 
-
 open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
     context: Context,
     attrs: AttributeSet?,
     defStyleAttr: Int
 ) : WebView(context, attrs, defStyleAttr), IEditorWeb {
-
 
     interface OnTextChangeListener {
         fun onTextChange(text: String?)
@@ -73,13 +90,13 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
     }
 
     private fun addOnLayoutChangeUpdateHeight() {
-        addOnLayoutChangeListener { v: View?, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int ->
+        addOnLayoutChangeListener { v: View?, left: Int, top: Int, right: Int,
+            bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int ->
             val dp = Utils.px2dp(height.toFloat())
             if (dp == 0) return@addOnLayoutChangeListener
             setEditorHeight(dp)
         }
     }
-
 
     fun createWebviewClient(): EditorWebViewClient {
         return EditorWebViewClient()
@@ -108,7 +125,6 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
         }
     }
 
-
     fun removeDecorationChangeListener(listener: OnDecorationStateListener) {
         mDecorationStateListenerList?.remove(listener)
     }
@@ -116,7 +132,6 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
     fun setOnInitialLoadListener(listener: AfterInitialLoadListener?) {
         mLoadListener = listener
     }
-
 
     /**
      *
@@ -135,7 +150,6 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
         }
     }
 
-
     fun getHtml() = mContents
 
     fun disable() {
@@ -145,7 +159,6 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
     fun enable() {
         exec("javascript:RE.enable();")
     }
-
 
     /**
      * html px = androd dp
@@ -157,8 +170,8 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
     override fun setPadding(left: Int, top: Int, right: Int, bottom: Int) {
 //        super.setPadding(left, top, right, bottom)
         exec(
-            "javascript:RE.setPadding('" + left + "px', '" + top + "px', '" + right + "px', '" + bottom
-                    + "px');"
+            "javascript:RE.setPadding('" + left + "px', '" + top + "px', '" + right + "px', '" + bottom +
+                "px');"
         )
     }
 
@@ -217,7 +230,6 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
         exec("javascript:RE.setInputEnabled($inputEnabled)")
     }
 
-
     fun undo() {
         exec("javascript:RE.undo();")
     }
@@ -266,7 +278,7 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
      * @param fontSize 默认18
      */
     fun setFontSize(fontSize: Int) {
-        exec("javascript:RE.setFontSize('$fontSize'px);")
+        exec("javascript:RE.setFontSize('${fontSize}px');")
     }
 
     fun removeFormat() {
@@ -325,7 +337,7 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
      * @param width
      */
     fun insertImage(url: String, alt: String, width: Int) {
-        exec("javascript:RE.insertImageW('$url', '$alt','$width');")
+        exec("javascript:RE.insertImageW('$url', '$alt',,${width}px');")
     }
 
     /**
@@ -338,19 +350,25 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
      * @param height
      */
     fun insertImage(url: String, alt: String, width: Int, height: Int) {
-        exec("javascript:RE.insertImageWH('$url', '$alt','$width', '$height');")
+        exec("javascript:RE.insertImageWH('$url', '$alt',${width}px', '${height}px');")
     }
 
-    fun insertVideo(url: String) {
-        exec("javascript:RE.insertVideo('$url');")
+    /**
+     * Insert video
+     *
+     * @param url
+     * @param thumbURL 预览图片
+     */
+    fun insertVideo(url: String, thumbURL: String = "") {
+        exec("javascript:RE.insertVideo('$url','$thumbURL');")
     }
 
-    fun insertVideo(url: String, width: Int) {
-        exec("javascript:RE.insertVideoW('$url', '${width}px');")
+    fun insertVideo(url: String, thumbURL: String = "", width: Int) {
+        exec("javascript:RE.insertVideoW('$url','$thumbURL', '${width}px');")
     }
 
-    fun insertVideo(url: String, width: Int, height: Int) {
-        exec("javascript:RE.insertVideoWH('$url', '$width', '$height');")
+    fun insertVideo(url: String, thumbURL: String = "", width: Int, height: Int) {
+        exec("javascript:RE.insertVideoWH('$url', '$thumbURL', '${width}px', '${height}px');")
     }
 
     fun insertAudio(url: String) {
@@ -368,7 +386,6 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
     fun insertDivider() {
         exec("javascript:RE.setDivider();")
     }
-
 
     fun insertCode() {
         exec("javascript:RE.setCode();")
@@ -470,12 +487,13 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
         }
     }
 
-
     private fun callback(richText: String) {
         mContents = richText
         if (mTextChangeListenerList != null) {
-            mTextChangeListenerList!!.forEach {
-                it.onTextChange(mContents)
+            post {
+                mTextChangeListenerList!!.forEach {
+                    it.onTextChange(mContents)
+                }
             }
         }
     }
@@ -504,7 +522,6 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
             }
         }
     }
-
 
     override fun destroy() {
         mDecorationStateListenerList?.clear()

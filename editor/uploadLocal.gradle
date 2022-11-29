@@ -1,0 +1,15 @@
+apply plugin: 'maven-publish'
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                groupId "com.github.shetiejun"
+                from components.release
+                artifactId = "rich_editor"
+                version = '0.0.0'
+            }
+        }
+    }
+}
+

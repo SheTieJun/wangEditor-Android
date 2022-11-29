@@ -2,8 +2,8 @@
 <resources>
 
     <array name="colorPickerColors">
-        <item>#FFFFFF</item>
         <item>#000000</item>
+        <item>#FFFFFF</item>
         <item>#515370</item>
         <item>#607D8B</item>
         <item>#9E9E9E</item>

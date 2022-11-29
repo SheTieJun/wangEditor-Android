@@ -1,0 +1,30 @@
+apply plugin: 'com.diffplug.spotless'
+spotless {
+    kotlin {
+        target '**/*.kt'
+        targetExclude("$buildDir/**/*.kt")
+        targetExclude('bin/**/*.kt')
+        targetExclude('src/androidTest/java/**/*.*')
+        targetExclude('src/test/java/**/*.*')
+
+        ktlint().userData(['android'        : 'true', 'color': 'true',
+                           'max_line_length': '120', 'reporter': 'checkstyle'])
+
+        licenseHeaderFile rootProject.file('spotless/copyright.kt')
+    }
+    kotlinGradle {
+        target '*.gradle.kts' // default target for kotlinGradle
+        ktlint()
+    }
+    java {
+        target 'src/*/java/**/*.java'
+        removeUnusedImports()
+
+        googleJavaFormat() // has its own section below
+
+        licenseHeaderFile rootProject.file('spotless/copyright.kt')
+    }
+}
+//gradle spotlessJavaCheck: 检查是否有不符合格式的内容
+//gradle build 也会执行该命令
+//gradle spotlessJavaApply: 执行格式化修改文件

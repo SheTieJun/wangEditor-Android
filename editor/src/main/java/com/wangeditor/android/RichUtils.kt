@@ -1,3 +1,26 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2022 SheTieJun
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package com.wangeditor.android
 
 import android.content.res.Resources
@@ -12,10 +35,6 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import java.util.regex.Pattern
 
-/**
- * Created by leo
- * on 2020/9/18.
- */
 object RichUtils {
     /**
      * 截取富文本中的图片链接
@@ -27,7 +46,9 @@ object RichUtils {
             return imageSrcList as ArrayList<String?>
         }
         val p = Pattern.compile(
-            "<img\\b[^>]*\\bsrc\\b\\s*=\\s*('|\")?([^'\"\n\r\u000c>]+(\\.jpg|\\.bmp|\\.eps|\\.gif|\\.mif|\\.miff|\\.png|\\.tif|\\.tiff|\\.svg|\\.wmf|\\.jpe|\\.jpeg|\\.dib|\\.ico|\\.tga|\\.cut|\\.pic|\\b)\\b)[^>]*>",
+            "<img\\b[^>]*\\bsrc\\b\\s*=\\s*('|\")?([^'\"\n\r\u000c>]+(\\.jpg|\\.bmp|\\.eps|\\.gif|\\.mif" +
+                "|\\.miff|\\.png|\\.tif|\\.tiff|\\.svg|\\.wmf|\\.jpe|\\.jpeg|\\.dib|\\.ico|\\.tga|\\.cut" +
+                "|\\.pic|\\b)\\b)[^>]*>",
             Pattern.CASE_INSENSITIVE
         )
         val m = p.matcher(content)
@@ -64,9 +85,8 @@ object RichUtils {
         return TextUtils.isEmpty(text) && images.size == 0
     }
 
-
     @JvmStatic
-    fun initKeyboard(activity: FragmentActivity,onKeyboardHide:() ->Unit,onKeyboardShow:()->Unit) {
+    fun initKeyboard(activity: FragmentActivity, onKeyboardHide: () -> Unit, onKeyboardShow: () -> Unit) {
         val mLayoutDelay = 0
         var mPreviousKeyboardHeight = 0
         var mKeyboardHeight = 0
@@ -81,6 +101,7 @@ object RichUtils {
                 }
                 rootView.postDelayed({ init() }, mLayoutDelay.toLong())
             }
+
             private fun init() {
                 val r = Rect()
                 val view = window.decorView
@@ -99,14 +120,12 @@ object RichUtils {
             }
         }
         rootView.viewTreeObserver.addOnGlobalLayoutListener(listener)
-        activity.lifecycle.addObserver(object :LifecycleEventObserver{
+        activity.lifecycle.addObserver(object : LifecycleEventObserver {
             override fun onStateChanged(source: LifecycleOwner, event: Event) {
-                if (event == Event.ON_DESTROY){
+                if (event == Event.ON_DESTROY) {
                     rootView.viewTreeObserver.removeOnGlobalLayoutListener(listener)
                 }
             }
         })
     }
-
-
 }

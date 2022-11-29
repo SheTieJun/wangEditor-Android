@@ -40,3 +40,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     implementation project(path: ':editor')
 }
+
+apply from : "../spotless.gradle"
+apply from : "uploadLocal.gradle"

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 SheTieJun
+ * Copyright (c) 2022 SheTieJun
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -63,10 +63,8 @@ object FileKit {
         if (VERSION.SDK_INT < VERSION_CODES.KITKAT) {
             return getRealFilePath(context, uri)
         }
-        if (VERSION.SDK_INT >= VERSION_CODES.KITKAT && VERSION.SDK_INT < VERSION_CODES.Q && DocumentsContract.isDocumentUri(
-                context,
-                uri
-            )
+        if (VERSION.SDK_INT >= VERSION_CODES.KITKAT && VERSION.SDK_INT < VERSION_CODES.Q &&
+            DocumentsContract.isDocumentUri(context, uri)
         ) {
             if (isExternalStorageDocument(uri)) {
                 val docId = DocumentsContract.getDocumentId(uri)
@@ -124,7 +122,7 @@ object FileKit {
         return null
     }
 
-    //此方法 只能用于4.4以下的版本
+    // 此方法 只能用于4.4以下的版本
     private fun getRealFilePath(context: Context, uri: Uri?): String? {
         if (null == uri) {
             return null
@@ -255,13 +253,13 @@ object FileKit {
             val displayName = if (start > 0) {
                 // 因为存在部分文件的扩展名称获取错误，所以先用文件原有的扩展名称，在使用
                 "${System.currentTimeMillis()}${Random.nextInt(0, 9999)}.${
-                    uri.path?.substring(start + 1) ?: MimeTypeMap.getSingleton()
-                        .getExtensionFromMimeType(contentResolver.getType(uri))
+                uri.path?.substring(start + 1) ?: MimeTypeMap.getSingleton()
+                    .getExtensionFromMimeType(contentResolver.getType(uri))
                 }"
             } else {
                 "${System.currentTimeMillis()}${Random.nextInt(0, 9999)}.${
-                    MimeTypeMap.getSingleton()
-                        .getExtensionFromMimeType(contentResolver.getType(uri))
+                MimeTypeMap.getSingleton()
+                    .getExtensionFromMimeType(contentResolver.getType(uri))
                 }"
             }
             val ios = contentResolver.openInputStream(uri)

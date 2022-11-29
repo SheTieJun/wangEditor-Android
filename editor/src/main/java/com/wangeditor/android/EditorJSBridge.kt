@@ -1,30 +1,47 @@
-package com.wangeditor.android;
+/*
+ * MIT License
+ *
+ * Copyright (c) 2022 SheTieJun
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+package com.wangeditor.android
 
-import android.webkit.JavascriptInterface;
-import java.lang.ref.WeakReference;
+import android.webkit.JavascriptInterface
+import java.lang.ref.WeakReference
 
+class EditorJSBridge(web: IEditorWeb) : Any() {
+    private var iWebWeakReference: WeakReference<IEditorWeb>? = null
 
-public class EditorJSBridge extends Object {
-    private WeakReference<IEditorWeb> iWebWeakReference;
-
-    public EditorJSBridge(IEditorWeb web) {
-        this.iWebWeakReference = new WeakReference<>(web);
+    init {
+        iWebWeakReference = WeakReference(web)
     }
 
     @JavascriptInterface
-    public void onStyleChange(String content) {
-        IEditorWeb ihwWeb = iWebWeakReference.get();
-        if (ihwWeb == null) return;
-        ihwWeb.onStyleChange(content);
+    fun onStyleChange(content: String?) {
+        val ihwWeb = iWebWeakReference?.get() ?: return
+        ihwWeb.onStyleChange(content)
     }
 
     @JavascriptInterface
-    public void onContentChange(String content) {
-        IEditorWeb ihwWeb = iWebWeakReference.get();
-        if (ihwWeb == null) return;
-        ihwWeb.onContentChange(content);
+    fun onContentChange(content: String?) {
+        val ihwWeb = iWebWeakReference?.get() ?: return
+        ihwWeb.onContentChange(content)
     }
-
-
 }
-

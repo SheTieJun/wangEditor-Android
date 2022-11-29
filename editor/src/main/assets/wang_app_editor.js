@@ -132,7 +132,7 @@ RE.setSuperscript = function () {
 }
 
 RE.setStrikeThrough = function () {
-    var isTrue = SlateEditor.marks(RE.editor).sup
+    var isTrue = SlateEditor.marks(RE.editor).through
     if (isTrue) {
         RE.editor.removeMark('through')
     } else {
@@ -328,10 +328,11 @@ RE.insertImageWH = function (url, alt, width, height) {
     RE.editor.insertNode(image)
 }
 
-RE.insertVideo = function (url) {
+RE.insertVideo = function (url,thumbURL) {
     RE.reFocus()
     var video = {
         type: 'video',
+        poster:thumbURL,
         src: url,
         style: {
             width: 'auto',
@@ -344,10 +345,11 @@ RE.insertVideo = function (url) {
     RE.editor.insertNode(video)
 }
 
-RE.insertVideoW = function (url, width) {
+RE.insertVideoW = function (url,thumbURL, width) {
     RE.reFocus()
     var video = {
         type: 'video',
+        poster:thumbURL,
         src: url,
         style: {
             width: width
@@ -359,10 +361,11 @@ RE.insertVideoW = function (url, width) {
     RE.editor.insertNode(video)
 }
 
-RE.insertVideoWH = function (url, width, height) {
+RE.insertVideoWH = function (url,thumbURL, width, height) {
     RE.reFocus()
     var video = {
         type: 'video',
+        poster:thumbURL,
         src: url,
         style: {
             width: width,
@@ -661,7 +664,7 @@ RE.editor.on('change', function () {
     }
     window.WreApp.onContentChange(RE.getHtml());
     window.WreApp.onStyleChange(JSON.stringify(items));
-    console.log(JSON.stringify(items))
+//    console.log(JSON.stringify(items))
 //    console.log(editStyle)
     // console.log(fragment)
 })
