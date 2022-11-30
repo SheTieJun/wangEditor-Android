@@ -17,6 +17,15 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        release {
+            keyAlias 'shetj'
+            keyPassword '123456'
+            storeFile file('./test.jks')
+            storePassword '123456'
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -35,14 +44,7 @@ android {
         jvmTarget = '11'
     }
 
-    signingConfigs {
-        release {
-            keyAlias 'shetj'
-            keyPassword '123456'
-            storeFile file('./test.jks')
-            storePassword '123456'
-        }
-    }
+
 }
 
 dependencies {
