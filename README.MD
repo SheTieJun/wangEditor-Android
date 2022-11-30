@@ -1,4 +1,6 @@
 ## wangEditor-Android
+[![](https://jitpack.io/v/SheTieJun/wangEditor-Android.svg)](https://jitpack.io/#SheTieJun/wangEditor-Android)
+![buildWorkflow](https://github.com/SheTieJun/wangEditor-Android/actions/workflows/android.yml/badge.svg)
 
 基于[**wangEditor**](https://github.com/wangeditor-team/wangEditor) 在Android实现的富文本功能
 
@@ -31,8 +33,6 @@
 - [X] Ordered List (Numbers)
 - [X] Cursor Color 光标颜色 ，和 Android光标下的小圆点按钮颜色是通过主题修改的
 - [X] removeFormat 清除选中文本的格式，不可以清除heading
-
-
 - [ ] Insert Audio : 编辑器不支持~，如果有会js的人可以扩展一下
 - [ ] Table :编辑器支持，后面可以看情况加入，感觉手机上可能用不到
 
@@ -43,6 +43,20 @@
 |------------------------|---------------------------|
 | ![](image/颜色修改.webp)   | ![](image/heading修改.webp) |
 | ![](image/字体大小修改.webp) | ![](image/demo样式.webp)    |
+
+
+## 接入项目
+
+Add it in your root build.gradle at the end of repositories:
+```
+maven { url 'https://jitpack.io' }
+```
+Step 2. Add the dependency
+```
+dependencies {
+implementation 'com.github.SheTieJun:wangEditor-Android:Tag'
+}
+```
 
 ## Default Setting for Editor
 
