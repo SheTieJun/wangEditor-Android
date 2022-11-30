@@ -2,7 +2,7 @@ name: Demo APK Build
 
 on:
   push:
-    branches: [ master ]
+    branches: [ build-apk ]
 
 jobs:
   build:
