@@ -22,7 +22,6 @@
 - [X] Code, 如果是设置选择文本使用code，会清除其他格式只保留文本
 - [X] Insert Image
 - [X] Insert Video
-- [ ] Insert Audio : 编辑器不支持~，如果同js的人可以扩展一下
 - [X] Insert Link
 - [x] Checkbox：【Todo】
 - [X] Text Color
@@ -32,12 +31,15 @@
 - [X] Ordered List (Numbers)
 - [X] Cursor Color 光标颜色 ，和 Android光标下的小圆点按钮颜色是通过主题修改的
 - [X] removeFormat 清除选中文本的格式，不可以清除heading
+
+
+- [ ] Insert Audio : 编辑器不支持~，如果有会js的人可以扩展一下
 - [ ] Table :编辑器支持，后面可以看情况加入，感觉手机上可能用不到
 
-|                        |     |
-|------------------------|-----|
-|![](image/颜色修改.webp)  |  ![](image/heading修改.webp)    |
-| ![](image/字体大小修改.webp) |  ![](image/demo样式.webp)    |
+|                        |                           |
+|------------------------|---------------------------|
+| ![](image/颜色修改.webp)   | ![](image/heading修改.webp) |
+| ![](image/字体大小修改.webp) | ![](image/demo样式.webp)    |
 
 ## Default Setting for Editor
 
@@ -132,3 +134,64 @@ editToolbar.initMedia()
 6. > 缺点：`wang_editor_index.js`体积太大，功能内容太多，已我的知识储备无法进行优化简化,同时不支持低版本chrome
    >
    > 优化：`wangEditor`功能齐全强大，后续可以功能同步web
+
+
+## 相关API
+---------
+- disable
+- enable
+- setInputEnabled
+---------
+- getHtml
+- setHtml
+---------
+- addOnDecorationChangeListener
+- addOnTextChangeListener
+- setOnInitialLoadListener
+---------
+- focusEditor
+- clearFocusEditor
+---------
+- setEditorBackgroundColor
+- setEditorCursorColor
+- setEditorHeight
+- setEditorHeight
+- setEditorWidth
+---------
+- setTextBackgroundColor
+- setFontSize
+- setTextColor
+---------
+- redo
+- undo
+---------
+- setBackgroundColor
+- setBlockquote
+- setBold
+- setStrikeThrough
+- setSubscript
+- setSuperscript
+- setUnderline
+- setItalic
+---------
+- setIndent
+- setOutdent
+---------
+- setHeading
+- setParagraph
+- setNumbers
+- setBullets
+- setAlignCenter
+- setAlignLeft
+- setAlignRight
+---------
+- initKeyboardChange
+---------
+- insertAudio
+- insertCode
+- insertDivider
+- insertImage
+- insertLink
+- insertTodo
+- insertVideo
+
