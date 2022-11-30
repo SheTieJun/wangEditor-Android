@@ -81,11 +81,14 @@ editor.setPadding(10, 10, 10, 10); //android dp = html px
 
 ```XML
 
-<com.wangeditor.android.toolbar.RichEditorToolbar android:id="@+id/editToolbar" android:layout_width="match_parent"
+<com.wangeditor.android.toolbar.RichEditorToolbar 
+    android:id="@+id/editToolbar" 
+    android:layout_width="match_parent"
     android:layout_height="wrap_content" />
 ```
 
 ```Kotlin
+editToolbar.setEditor(mViewBinding.richEditor)
 editToolbar.initTextStyle()
 editToolbar.initFunStyle()
 editToolbar.initParagraphStyle()
@@ -111,21 +114,21 @@ editToolbar.initMedia()
 
 [android-system-webview.APK](https://www.apkmirror.com/apk/google-inc/android-system-webview/android-system-webview-89-0-4389-90-release/android-system-webview-89-0-4389-90-3-android-apk-download/?redirected=thank_you_invalid_nonce)
 
-## 相关提示
+## 相关提示说明
 
-> 1.其中的交互部分`wang_app_editor.js`可以在iOS上通用，就是说iOS可以复制使用相关功能。
+1. 其中的交互部分`wang_app_editor.js`可以在iOS上通用，就是说iOS可以复制使用相关功能，不过可能需要修改部分调用native的方法部分。
 
-> 2.为什么项目中没有使用原生Span实现，主要原因是标签解析的问题。
-> 原生我也实现了一版demo，大部分功能都已实现,发现中间会有很多意外的情况需要进行处理。
+2. 为什么项目中没有使用原生Span实现，主要原因是标签解析的问题。
+   原生我也实现了一版demo，大部分功能都已实现,发现中间会有很多意外的情况需要进行处理。
 
-> 3.为什么使用`wangEditor`， 因为web端使用了`wangEditor`项目进行开发的。
+3. 为什么使用`wangEditor`，  这是考虑多端处理的结果，其中web端使用了`wangEditor`项目进行开发的，我尝试移植后发现也可以使用，这样可以保证相同的格式处理问题。
 
-> 4.`wangEditor`功能很全，但是我只懂皮毛的`js`和`html`，所以我这里只用到**部分**的功能，也有一些功能被我移除了,我用的是`simple`
+4. wangEditor`功能很全，但是我只懂皮毛的`js`和`html`，所以我这里只用到**部分**的功能，也有一些功能被我移除了,我用的是`simple
 
-> 5.mode: 'default' 默认模式 - 集成了`wangEditor`所有功能
->
->mode: 'simple' 简洁模式 - 仅有部分常见功能，但更加简洁易用
+5. > mode: 'default' 默认模式 - 集成了`wangEditor`所有功能
+   >
+   > mode: 'simple' 简洁模式 - 仅有部分常见功能，但更加简洁易用
 
-> 6.缺点：`wang_editor_index.js`体积太大，功能内容太多，已我的知识储备无法进行优化简化,同时不支持低版本chrome
->
-> 优化：`wangEditor`功能齐全强大，后续可以功能同步web
+6. > 缺点：`wang_editor_index.js`体积太大，功能内容太多，已我的知识储备无法进行优化简化,同时不支持低版本chrome
+   >
+   > 优化：`wangEditor`功能齐全强大，后续可以功能同步web
