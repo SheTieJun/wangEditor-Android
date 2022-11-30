@@ -2,7 +2,7 @@ name: Demo APK Build
 
 on:
   push:
-    branches: [ master ]
+    branches: [ feat_ci_fir ]
 
 jobs:
   build:
