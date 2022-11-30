@@ -33,6 +33,15 @@ android {
     kotlinOptions {
         jvmTarget = '11'
     }
+
+    signingConfigs {
+        release {
+            keyAlias 'shetj'
+            keyPassword '123456'
+            storeFile file('./test.jks')
+            storePassword '123456'
+        }
+    }
 }
 
 dependencies {
