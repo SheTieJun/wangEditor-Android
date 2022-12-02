@@ -233,7 +233,7 @@ RE.setTextBackgroundColor = function (color) {
     RE.editor.addMark('bgColor', color);
 }
 
-RE.setFontSize = function (fontSize) {
+RE.setTextFontSize = function (fontSize) {
     RE.editor.addMark('fontSize', fontSize);
 }
 

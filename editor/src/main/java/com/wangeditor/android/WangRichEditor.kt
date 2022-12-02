@@ -277,8 +277,8 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
      *
      * @param fontSize 默认18
      */
-    fun setFontSize(fontSize: Int) {
-        exec("javascript:RE.setFontSize('${fontSize}px');")
+    fun setTextFontSize(fontSize: Int) {
+        exec("javascript:RE.setTextFontSize('${fontSize}px');")
     }
 
     fun removeFormat() {

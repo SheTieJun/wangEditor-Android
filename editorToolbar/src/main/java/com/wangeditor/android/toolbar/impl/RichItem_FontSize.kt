@@ -77,6 +77,6 @@ class RichItem_FontSize : IRichItem(), FontSizeChangeListener {
 
     override fun onFontSizeChange(fontSize: Int) {
         mCurrentValue = fontSize
-        mWangEditor!!.setFontSize(fontSize)
+        mWangEditor!!.setTextFontSize(fontSize)
     }
 }

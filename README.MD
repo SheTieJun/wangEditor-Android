@@ -12,16 +12,12 @@
 - [X] Superscript
 - [X] Strikethrough
 - [X] Underline
-- [X] Justify Left
-- [X] Justify Center
-- [X] Justify Right
+- [X] Justify Left/ Justify Center / Justify Right
 - [X] Heading 1、2、3 、4、5、6
-- [X] Undo
-- [X] Redo
-- [X] Indent
-- [X] Outdent
-- [X] Blockquote
-- [X] Code, 如果是设置选择文本使用code，会清除其他格式只保留文本
+- [X] Undo/Redo
+- [X] Indent/Outdent
+- [X] Blockquote 
+- [X] Insert Code : 如果是设置选择文本使用code，会清除其他内容，只保留文本
 - [X] Insert Image
 - [X] Insert Video
 - [X] Insert Link
@@ -56,6 +52,7 @@ Step 2. Add the dependency
 dependencies {
 implementation 'com.github.SheTieJun:wangEditor-Android:Tag'
 
+//或者
 implementation `com.github.SheTieJun.wangEditor-Android:rich_editor:Tag`
 implementation `com.github.SheTieJun.wangEditor-Android:editor_toolbar:Tag`
 }
@@ -140,7 +137,7 @@ editToolbar.initMedia()
 > 为什么不用X5，1. X5是动态加载的，内核由于包大小较大，存在一定失败率，也就是说用户可能会存在无法使用的情况
 > 2.如果你要上架google，那么就不能使用X5
 
-
+如果存在个别用户Chrome版本过低，可以在下面的链接下载apk给用户安装，~需要梯子
 [android-system-webview.APK](https://www.apkmirror.com/apk/google-inc/android-system-webview/android-system-webview-89-0-4389-90-release/android-system-webview-89-0-4389-90-3-android-apk-download/?redirected=thank_you_invalid_nonce)
 
 ## 相关提示说明
@@ -148,7 +145,7 @@ editToolbar.initMedia()
 1. 其中的交互部分`wang_app_editor.js`可以在iOS上通用，就是说iOS可以复制使用相关功能，不过可能需要修改部分调用native的方法部分。
 
 2. 为什么项目中没有使用原生Span实现，主要原因是标签解析的问题。
-   原生我也实现了一版demo，大部分功能都已实现,发现中间会有很多意外的情况需要进行处理。
+   原生我也实现了一版demo，大部分功能都已实现,发现中间会有很多意外的情况需要进行处理，例如颜色rgb,arg,#fff。
 
 3. 为什么使用`wangEditor`，  这是考虑多端处理的结果，其中web端使用了`wangEditor`项目进行开发的，我尝试移植后发现也可以使用，这样可以保证相同的格式处理问题。
 
@@ -186,7 +183,7 @@ editToolbar.initMedia()
 - setEditorWidth
 ---------
 - setTextBackgroundColor
-- setFontSize
+- setTextFontSize
 - setTextColor
 ---------
 - redo
