@@ -32,7 +32,7 @@
 - [X] Unordered List (Bullets)
 - [X] Ordered List (Numbers)
 - [X] Cursor Color 光标颜色 ，和 Android光标下的小圆点按钮颜色是通过主题修改的
-- [X] removeFormat 清除选中文本的格式，不可以清除heading
+- [X] removeFormat :清除选中文本的格式，不可以清除heading
 - [ ] Insert Audio : 编辑器不支持~，如果有会js的人可以扩展一下
 - [ ] Table :编辑器支持，后面可以看情况加入，感觉手机上可能用不到
 
@@ -55,10 +55,20 @@ Step 2. Add the dependency
 ```
 dependencies {
 implementation 'com.github.SheTieJun:wangEditor-Android:Tag'
+
+implementation `com.github.SheTieJun.wangEditor-Android:rich_editor:Tag`
+implementation `com.github.SheTieJun.wangEditor-Android:editor_toolbar:Tag`
 }
 ```
 
 ## Default Setting for Editor
+```xml
+    <com.wangeditor.android.WangRichEditor
+        android:id="@+id/rich_Editor"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+  />
+```
 
 ### Height
 

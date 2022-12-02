@@ -34,6 +34,7 @@ import com.wangeditor.android.RichType
 import com.wangeditor.android.Utils
 import com.wangeditor.android.toolbar.IRichItem
 import com.wangeditor.android.toolbar.R
+import com.wangeditor.android.toolbar.getColorInt
 import com.wangeditor.android.toolbar.windows.ColorPickerWindow
 import com.wangeditor.android.toolbar.windows.colorpicker.ColorPickerListener
 import com.wangeditor.android.toolbar.windows.colorpicker.ColorPickerView
@@ -54,7 +55,8 @@ class RichItem_TextBgColor : IRichItem(), ColorPickerListener {
     override fun updateSelected(isSelected: Boolean, currentValue: Any?) {
         super.updateSelected(isSelected, currentValue)
         runCatching {
-            val parseColor = Color.parseColor(mCurrentValue.toString())
+            val colorString = mCurrentValue.toString().replace(" ","").trim()
+            val parseColor = getColorInt(colorString,mDefValue)
             setColorChecked(parseColor)
         }
     }
@@ -76,12 +78,15 @@ class RichItem_TextBgColor : IRichItem(), ColorPickerListener {
     }
 
     private fun showFontColorPickerWindow() {
+        val colorString = mCurrentValue.toString().replace(" ","").trim()
+        val parseColor = getColorInt(colorString,mDefValue)
         if (mColorPickerWindow == null) {
             mColorPickerWindow = ColorPickerWindow(mWangEditor!!.context, this)
+            //第一次要选中颜色
+            setColorChecked(parseColor)
         }
         val yOff: Int = Utils.dp2px(-5f)
         mColorPickerWindow!!.showAsDropDown(getItemView(), 0, yOff)
-        val parseColor = Color.parseColor(mCurrentValue.toString())
         mColorPickerWindow!!.setBackgroundColor(parseColor)
     }
 

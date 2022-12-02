@@ -451,9 +451,31 @@ RE.reFocus = function () {
 
 //清除选中的格式
 RE.removeFormat = function () {
-    document.execCommand('removeFormat', false, null);
+       // 获取所有 text node
+       const nodeEntries = SlateEditor.nodes(editor, {
+         match: n => SlateText.isText(n),
+         universal: true,
+       })
+       for (const nodeEntry of nodeEntries) {
+         // 单个 text node
+         const n = nodeEntry[0]
+         RE.removeMarks(editor, n)
+       }
 }
 
+
+RE.removeMarks = function(editor, textNode) {
+  // 遍历 text node 属性，清除样式
+  const keys = Object.keys(textNode);
+  keys.forEach(key => {
+    if (key === 'text') {
+      // 保留 text 属性，text node 必须的
+      return
+    }
+    // 其他属性，全部清除
+     RE.editor.removeMark(key)
+  })
+}
 
 RE.editor.on('change', function () {
 

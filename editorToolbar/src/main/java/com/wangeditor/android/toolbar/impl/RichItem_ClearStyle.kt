@@ -21,38 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.wangeditor.android
+package com.wangeditor.android.toolbar.impl
 
-enum class RichType {
-    Bold, // 加粗
-    Italic, // 斜体
-    SubScript,
-    SuperScript,
-    StrikeThrough,
-    FontSize, // 字体大小
-    FontColor, // 字体大小
-    TextBgColor, // 背景颜色
-    UnderLine, // 下滑先
-    Header, // header
+import android.view.View
+import android.widget.ImageView
+import android.widget.LinearLayout.LayoutParams
+import androidx.core.view.setPadding
+import com.wangeditor.android.RichType
+import com.wangeditor.android.toolbar.IRichItem
+import com.wangeditor.android.toolbar.R
 
-    Indent, // 缩进
-    NumberList, // 列表排序
-    BulletList, // 没有1。2。3的列表
-    JustifyCenter, // 居中
-    JustifyFull, // 两端对齐
-    JustifyLeft, // 靠左
-    JustifyRight, // 靠右
+/**
+ *
+ * checkBox
+ */
+class RichItem_ClearStyle : IRichItem() {
+    override fun getType(): String {
+        return RichType.Unknown.name
+    }
 
-    Todo, // check box  to do
-    Link, // 链接
+    override fun onClick() {
+        mWangEditor?.removeFormat()
+    }
 
-    Image, // 图片 image
-    Video, // 视频
-    Audio, // 音频
-    BlockQuote, // 引用 blockquote
-    Code, // 代码块
-    Divider, // 分割线
-
-
-    Unknown,//不需要选中
+    override fun buildView(): View {
+        return ImageView(mWangEditor!!.context).apply {
+            layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT)
+            setPadding(15)
+            setImageResource(R.drawable.note_icon_clearstyle)
+        }
+    }
 }
