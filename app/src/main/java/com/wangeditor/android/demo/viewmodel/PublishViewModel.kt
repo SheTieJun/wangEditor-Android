@@ -1,5 +1,6 @@
 package com.wangeditor.android.demo.viewmodel
 
+import androidx.lifecycle.MutableLiveData
 import com.wangeditor.android.RichUtils
 import com.wangeditor.android.demo.model.Note
 import kotlinx.coroutines.Dispatchers
@@ -16,6 +17,9 @@ import me.shetj.base.saver.Saver
 
 
 class PublishViewModel : BaseViewModel() {
+
+
+    val enable = MutableLiveData<Boolean>()
 
     var currentNote: Note? = null
 

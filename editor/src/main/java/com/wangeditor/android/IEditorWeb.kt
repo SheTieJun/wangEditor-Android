@@ -25,6 +25,8 @@ package com.wangeditor.android
 
 interface IEditorWeb {
 
+    fun onTextChange(onlyText:String)
+
     fun onContentChange(richText: String?)
 
     fun onStyleChange(styleJson: String?)

@@ -44,4 +44,10 @@ class EditorJSBridge(web: IEditorWeb) : Any() {
         val ihwWeb = iWebWeakReference?.get() ?: return
         ihwWeb.onContentChange(content)
     }
+
+    @JavascriptInterface
+    fun onTextChange(content: String?) {
+        val ihwWeb = iWebWeakReference?.get() ?: return
+        ihwWeb.onTextChange(content?:"")
+    }
 }

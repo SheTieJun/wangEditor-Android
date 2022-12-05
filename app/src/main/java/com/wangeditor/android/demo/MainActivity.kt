@@ -1,19 +1,16 @@
 package com.wangeditor.android.demo
 
-import android.content.Intent
 import android.graphics.Color
 import android.view.View
 import android.view.View.OnClickListener
 import com.wangeditor.android.Utils
 import com.wangeditor.android.demo.activity.PublishActivity
-import com.wangeditor.android.demo.activity.ShowArtActivity
 import com.wangeditor.android.demo.adapter.NoteAdapter
 import com.wangeditor.android.demo.databinding.ActivityMainBinding
 import com.wangeditor.android.demo.model.Note
 import com.wangeditor.android.demo.viewmodel.MainViewModel
 import me.shetj.base.ktx.launch
 import me.shetj.base.ktx.setAppearance
-import me.shetj.base.ktx.start
 import me.shetj.base.mvvm.BaseBindingActivity
 
 class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), OnClickListener {
@@ -27,7 +24,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
 
         mViewBinding.recycleView.adapter = mAdapter
         mAdapter.setOnItemClickListener { _, _, position ->
-            ShowArtActivity.start(this, mAdapter.getItem(position).saver?.keyName)
+            PublishActivity.start(this, mAdapter.getItem(position).saver?.keyName,false)
         }
 
     }
@@ -51,7 +48,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.create -> {
-                start(Intent(this, PublishActivity::class.java))
+                PublishActivity.start(this, null,isEdit = true)
             }
             else -> {}
         }

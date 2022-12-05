@@ -50,7 +50,8 @@ class RichItem_Image : AbRichItem_Media() {
             return
         }
         if (File(url).exists()) {
-            mWangEditor!!.insertImage("file://$url", "")
+            //base 64 会导致卡顿
+            mWangEditor!!.insertImageBase64(url)
             return
         }
         Log.e("WangRichEditor", "insertImage is error,url is not standard")

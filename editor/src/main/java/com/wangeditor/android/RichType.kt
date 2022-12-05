@@ -54,5 +54,5 @@ enum class RichType {
     Divider, // 分割线
 
 
-    Unknown,//不需要选中
+    Unknown,//不需要选中，不需要反选，直接执行对应功能的类型，比如：橡皮擦功能
 }

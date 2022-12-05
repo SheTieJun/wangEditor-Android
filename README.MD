@@ -161,6 +161,9 @@ editToolbar.initMedia()
 
 
 ## 相关API
+
+核心文件：[wang_app_editor.js](editor/src/main/assets/wang_app_editor.js)
+
 ---------
 - disable
 - enable

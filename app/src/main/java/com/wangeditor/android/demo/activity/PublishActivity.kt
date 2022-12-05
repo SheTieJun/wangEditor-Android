@@ -4,46 +4,44 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.text.Html
 import android.text.TextUtils
 import android.view.View
 import android.view.View.OnClickListener
-import android.widget.Toast
-import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import androidx.lifecycle.lifecycleScope
+import androidx.transition.ChangeBounds
+import androidx.transition.TransitionManager
 import com.wangeditor.android.RichType
 import com.wangeditor.android.RichUtils
+import com.wangeditor.android.WangRichEditor.OnContentChangeListener
 import com.wangeditor.android.WangRichEditor.OnTextChangeListener
 import com.wangeditor.android.demo.R.id
 import com.wangeditor.android.demo.databinding.ActivityPublishBinding
-import com.wangeditor.android.demo.model.Note
 import com.wangeditor.android.demo.viewmodel.PublishViewModel
 import com.wangeditor.android.toolbar.impl.media.AbRichItem_Media
+import com.wangeditor.android.toolbar.impl.media.MediaStrategy
 import com.wangeditor.android.toolbar.initFunStyle
 import com.wangeditor.android.toolbar.initMedia
 import com.wangeditor.android.toolbar.initParagraphStyle
 import com.wangeditor.android.toolbar.initTextStyle
-import com.wangeditor.android.toolbar.impl.media.MediaStrategy
-import kotlinx.coroutines.flow.collect
 import me.shetj.base.ktx.launch
-import me.shetj.base.ktx.logI
 import me.shetj.base.ktx.selectFile
 import me.shetj.base.ktx.setAppearance
 import me.shetj.base.ktx.showToast
 import me.shetj.base.ktx.start
-import me.shetj.base.ktx.toBean
-import me.shetj.base.ktx.toJson
 import me.shetj.base.mvvm.BaseBindingActivity
 import me.shetj.base.tip.TipKit
+import me.shetj.base.tools.app.KeyboardUtil
 
 class PublishActivity : BaseBindingActivity<ActivityPublishBinding, PublishViewModel>(), OnClickListener {
 
 
     companion object {
-        fun start(context: Context, saveKey:String?=null) {
+        fun start(context: Context, saveKey: String? = null, isEdit: Boolean = true) {
             val intent = Intent(context, PublishActivity::class.java).apply {
-                putExtra("saveKey",saveKey)
+                putExtra("saveKey", saveKey)
+                putExtra("isEdit", isEdit)
             }
             context.start(intent)
         }
@@ -53,6 +51,8 @@ class PublishActivity : BaseBindingActivity<ActivityPublishBinding, PublishViewM
         super.onCreate(savedInstanceState)
         setAppearance(true, Color.WHITE)
         val saveKey = intent.getStringExtra("saveKey")
+        val isEnable = intent.getBooleanExtra("isEdit", false)
+        mViewModel.enable.postValue(isEnable)
         initEditor()
         if (!saveKey.isNullOrEmpty()) {
             launch {
@@ -60,11 +60,26 @@ class PublishActivity : BaseBindingActivity<ActivityPublishBinding, PublishViewM
                     mViewModel.currentNote = it.getInfoByJson()
                     mViewBinding.editName.setText(mViewModel.currentNote?.title)
                     mViewBinding.richEditor.setHtml(mViewModel.currentNote?.content)
-                    mViewBinding.contentSize.text = "  |  ${RichUtils.returnOnlyText(mViewModel.currentNote?.content?:"").length} 字"
+                    mViewBinding.contentSize.text =
+                        "  |  ${RichUtils.returnOnlyText(mViewModel.currentNote?.content ?: "").length} 字"
                 }
             }
         }
         startAutoSave()
+        mViewBinding.richEditor.setInputEnabled(isEnable)
+        lifecycleScope.launchWhenCreated {
+            KeyboardUtil.hideSoftKeyboard(this@PublishActivity)
+            mViewModel.enable.observe(this@PublishActivity) {
+                mViewBinding.richEditor.setInputEnabled(it)
+                TransitionManager.endTransitions(mViewBinding.root)
+                TransitionManager.beginDelayedTransition(mViewBinding.root, ChangeBounds())
+                mViewBinding.leoBar.isVisible = it
+                mViewBinding.editName.isFocusable = it
+                mViewBinding.editName.isFocusableInTouchMode = it
+                mViewBinding.editEnable.isVisible = !it
+            }
+        }
+        mViewBinding.editEnable.setOnClickListener(this@PublishActivity)
     }
 
     private fun initEditor() {
@@ -83,64 +98,37 @@ class PublishActivity : BaseBindingActivity<ActivityPublishBinding, PublishViewM
         mViewBinding.contentSize.text = "  |  0 字"
         initEditorToolbar()
 
+        mViewBinding.richEditor.addOnContentChangeListener(object : OnContentChangeListener {
+            override fun onContentChange(html: String?) {
+                mViewModel.updateText(html)
+            }
+        })
+
         mViewBinding.richEditor.addOnTextChangeListener(object : OnTextChangeListener {
             override fun onTextChange(text: String?) {
-                mViewModel.updateText(text)
-                text?.let {
-                    mViewBinding.contentSize.text = "  |  ${RichUtils.returnOnlyText(text).length} 字"
-                }
-                text.toString().logI("WangNote")
-                if (TextUtils.isEmpty(mViewBinding.editName.text.toString().trim { it <= ' ' })) {
-                    mViewBinding.txtPublish.isSelected = false
-                    mViewBinding.txtPublish.isEnabled = false
-                    return
-                }
-                if (TextUtils.isEmpty(text)) {
-                    mViewBinding.txtPublish.isSelected = false
-                    mViewBinding.txtPublish.isEnabled = false
-                } else {
-                    if (TextUtils.isEmpty(Html.fromHtml(text, HtmlCompat.FROM_HTML_MODE_LEGACY))) {
-                        mViewBinding.txtPublish.isSelected = false
-                        mViewBinding.txtPublish.isEnabled = false
-                    } else {
-                        mViewBinding.txtPublish.isSelected = true
-                        mViewBinding.txtPublish.isEnabled = true
-                    }
+                launch {
+                    mViewBinding.contentSize.text = "  |  ${text?.length ?: 0} 字"
+                    val titleIsEmpty = TextUtils.isEmpty(mViewBinding.editName.text.toString().trim { it <= ' ' })
+                    val empty = text.isNullOrEmpty()
+                    mViewBinding.txtPublish.isSelected = !empty && !titleIsEmpty
+                    mViewBinding.txtPublish.isEnabled = !empty && !titleIsEmpty
                 }
             }
         })
 
         mViewBinding.editName.addTextChangedListener { ed ->
-            mViewModel.updateTitle(ed.toString())
-            val html = mViewBinding.richEditor.getHtml()
-            if (TextUtils.isEmpty(html)) {
-                mViewBinding.txtPublish.isSelected = false
-                mViewBinding.txtPublish.isEnabled = false
-                return@addTextChangedListener
-            } else {
-                if (TextUtils.isEmpty(Html.fromHtml(html, HtmlCompat.FROM_HTML_MODE_LEGACY))) {
-                    mViewBinding.txtPublish.isSelected = false
-                    mViewBinding.txtPublish.isEnabled = false
-                    return@addTextChangedListener
-                } else {
-                    mViewBinding.txtPublish.isSelected = true
-                    mViewBinding.txtPublish.isEnabled = true
-                }
-            }
-            if (TextUtils.isEmpty(ed.toString())) {
-                mViewBinding.txtPublish.isSelected = false
-                mViewBinding.txtPublish.isEnabled = false
-            } else {
-                mViewBinding.txtPublish.isSelected = true
-                mViewBinding.txtPublish.isEnabled = true
-            }
-            if (ed.toString().length > 40) {
-                mViewBinding.editName.setText(ed.toString().substring(0, 40))
+            val title = ed.toString()
+            mViewModel.updateTitle(title)
+            val html = mViewBinding.richEditor.getHtml().toString()
+            val empty = RichUtils.isEmpty(html)
+            mViewBinding.txtPublish.isSelected = !empty && title.isNotEmpty()
+            mViewBinding.txtPublish.isEnabled = !empty && title.isNotEmpty()
+            if (title.length > 40) {
+                mViewBinding.editName.setText(title.substring(0, 40))
                 mViewBinding.editName.setSelection(mViewBinding.editName.text.length)
                 TipKit.normal(this, "标题不能超过40个字")
             }
         }
-
 
 
     }
@@ -169,8 +157,11 @@ class PublishActivity : BaseBindingActivity<ActivityPublishBinding, PublishViewM
                     RichType.Video.name, RichType.Image.name -> {
                         selectFile(type = iRichItem.getMimeType()) {
                             it?.let {
-                                //我这里只是测试，如果是真实环境请不要
+                                //我这里只是测试，如果是真实环境请不要这样使用，请使用上传后的文件
+                                //content的地址只是临时的
+                                //base64 大图会非常的卡顿
                                 iRichItem.insertMedia(it.toString())
+                                "这里的资源访问地址是临时地址".showToast()
                             }
                         }
                     }
@@ -184,16 +175,24 @@ class PublishActivity : BaseBindingActivity<ActivityPublishBinding, PublishViewM
 
     override fun onClick(v: View) {
         when (v.id) {
-            id.txt_finish -> finish()
+            id.txt_finish -> {
+                mViewModel.save()
+                mViewModel.enable.postValue(false)
+            }
             id.txt_publish -> {
                 mViewModel.save()
-                Toast.makeText(this, "保存成功", Toast.LENGTH_SHORT).show()
-                finish()
+                mViewModel.enable.postValue(false)
             }
             id.button_rich_do ->                 //反撤销
                 mViewBinding.richEditor.redo()
             id.button_rich_undo ->                 //撤销
                 mViewBinding.richEditor.undo()
+            id.edit_enable -> {
+                mViewModel.enable.postValue(true)
+            }
+            else -> {
+
+            }
         }
     }
 

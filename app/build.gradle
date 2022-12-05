@@ -52,7 +52,7 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    implementation 'com.github.SheTieJun:BaseKit:ea04d62cf1'
+    implementation 'com.github.SheTieJun:BaseKit:542791b2cf'
     implementation project(path: ':editor')
     implementation project(path: ':editorToolbar')
 }

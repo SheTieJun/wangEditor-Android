@@ -27,10 +27,12 @@ import android.R.attr
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory.*
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.net.http.SslError
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.webkit.SslErrorHandler
 import android.webkit.WebChromeClient
@@ -40,6 +42,7 @@ import android.webkit.WebViewClient
 import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.FragmentActivity
 import com.wangeditor.android.RichUtils.initKeyboard
+import java.io.File
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 import java.util.concurrent.CopyOnWriteArrayList
@@ -50,6 +53,10 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
     attrs: AttributeSet?,
     defStyleAttr: Int
 ) : WebView(context, attrs, defStyleAttr), IEditorWeb {
+
+    interface OnContentChangeListener {
+        fun onContentChange(html: String?)
+    }
 
     interface OnTextChangeListener {
         fun onTextChange(text: String?)
@@ -65,6 +72,7 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
 
     private var isReady = false
     private var mContents: String? = null
+    private var mContentChangeListenerList: CopyOnWriteArrayList<OnContentChangeListener>? = null
     private var mTextChangeListenerList: CopyOnWriteArrayList<OnTextChangeListener>? = null
     private var mDecorationStateListenerList: CopyOnWriteArrayList<OnDecorationStateListener>? = null
     private var mLoadListener: AfterInitialLoadListener? = null
@@ -108,12 +116,26 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
         }
         if (!mTextChangeListenerList!!.contains(listener)) {
             mTextChangeListenerList?.add(listener)
-            listener.onTextChange(mContents)
         }
     }
 
     fun removeTextChangeListener(listener: OnTextChangeListener) {
         mTextChangeListenerList?.remove(listener)
+    }
+
+
+    fun addOnContentChangeListener(listener: OnContentChangeListener) {
+        if (mContentChangeListenerList == null) {
+            mContentChangeListenerList = CopyOnWriteArrayList()
+        }
+        if (!mContentChangeListenerList!!.contains(listener)) {
+            mContentChangeListenerList?.add(listener)
+            listener.onContentChange(mContents)
+        }
+    }
+
+    fun removeContentChangeListener(listener: OnContentChangeListener) {
+        mContentChangeListenerList?.remove(listener)
     }
 
     fun addOnDecorationChangeListener(listener: OnDecorationStateListener) {
@@ -330,6 +352,23 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
     }
 
     /**
+     * tip :请不要使用这个图片插入大图，否则会非常的卡顿
+     * @param url 本地图片
+     */
+    fun insertImageBase64(url: String) {
+        kotlin.runCatching {
+            if (!File(url).exists()){
+                Log.e("WangEditor","insertImageBase64 only support local file")
+                return
+            }
+            val base64 = Utils.toBase64(decodeFile(url))
+            exec("javascript:RE.insertImageBase64('data:image/png;base64,$base64');")
+        }.onFailure {
+            it.printStackTrace()
+        }
+    }
+
+    /**
      * the image according to the specific width of the image automatically
      *
      * @param url
@@ -489,10 +528,10 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
 
     private fun callback(richText: String) {
         mContents = richText
-        if (mTextChangeListenerList != null) {
+        if (mContentChangeListenerList != null) {
             post {
-                mTextChangeListenerList!!.forEach {
-                    it.onTextChange(mContents)
+                mContentChangeListenerList!!.forEach {
+                    it.onContentChange(mContents)
                 }
             }
         }
@@ -525,12 +564,22 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
 
     override fun destroy() {
         mDecorationStateListenerList?.clear()
-        mTextChangeListenerList?.clear()
+        mContentChangeListenerList?.clear()
         super.destroy()
     }
 
     companion object {
         private const val SETUP_HTML = "file:///android_asset/wang_editor.html"
+    }
+
+    override fun onTextChange(onlyText: String) {
+        if (mTextChangeListenerList != null) {
+            post {
+                mTextChangeListenerList!!.forEach {
+                    it.onTextChange(onlyText)
+                }
+            }
+        }
     }
 
     override fun onContentChange(richText: String?) {

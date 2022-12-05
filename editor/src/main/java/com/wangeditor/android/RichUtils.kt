@@ -47,8 +47,8 @@ object RichUtils {
         }
         val p = Pattern.compile(
             "<img\\b[^>]*\\bsrc\\b\\s*=\\s*('|\")?([^'\"\n\r\u000c>]+(\\.jpg|\\.bmp|\\.eps|\\.gif|\\.mif" +
-                "|\\.miff|\\.png|\\.tif|\\.tiff|\\.svg|\\.wmf|\\.jpe|\\.jpeg|\\.dib|\\.ico|\\.tga|\\.cut" +
-                "|\\.pic|\\b)\\b)[^>]*>",
+                    "|\\.miff|\\.png|\\.tif|\\.tiff|\\.svg|\\.wmf|\\.jpe|\\.jpeg|\\.dib|\\.ico|\\.tga|\\.cut" +
+                    "|\\.pic|\\b)\\b)[^>]*>",
             Pattern.CASE_INSENSITIVE
         )
         val m = p.matcher(content)
@@ -65,6 +65,7 @@ object RichUtils {
 
     /**
      * 截取富文本中的纯文本内容
+     * 当有base64的时候时间太久了
      */
     @JvmStatic
     fun returnOnlyText(htmlStr: String): String {
@@ -79,7 +80,8 @@ object RichUtils {
         }
     }
 
-    fun isEmpty(htmlStr: String): Boolean {
+    fun isEmpty(htmlStr: String?): Boolean {
+        if (htmlStr.isNullOrEmpty()) return true
         val images = returnImageUrlsFromHtml(htmlStr)
         val text = returnOnlyText(htmlStr)
         return TextUtils.isEmpty(text) && images.size == 0
@@ -127,5 +129,30 @@ object RichUtils {
                 }
             }
         })
+    }
+
+    /**
+     * Return def text
+     * 移除标签，只保留换行
+     * @param htmlStr 富文本内容
+     * @return
+     */
+    fun returnDefText(htmlStr: String): String {
+        var defText = htmlStr
+        if (TextUtils.isEmpty(defText)) {
+            return ""
+        }
+        defText = defText.replace("<br>".toRegex(), "\n")
+            .replace("&emsp;".toRegex(), "")
+            .replace("&nbsp;".toRegex(), "")
+            .replace("</p>".toRegex(), "\n")
+            .replace("</h1>".toRegex(), "\n")
+            .replace("</h2>".toRegex(), "\n")
+            .replace("</h3>".toRegex(), "\n")
+            .replace("</h4>".toRegex(), "\n")
+            .replace("<br/>".toRegex(), "\n")
+            .replace("</li>".toRegex(), "\n")
+            .replace("<[^>]+>".toRegex(), "")
+        return defText
     }
 }

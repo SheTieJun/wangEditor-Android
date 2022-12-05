@@ -280,6 +280,20 @@ RE.setJustifyRight = function () {
 }
 
 
+RE.insertImageBase64 = function(image){
+    RE.reFocus();
+    var image = {
+        type: 'image',
+        src: image,
+        style: {
+            width: '100%'
+        },
+        children: [{
+            text: "base64Image"
+        }]
+    };
+    RE.editor.insertNode(image);
+}
 RE.insertImage = function (url, alt) {
     RE.reFocus();
     var image = {
@@ -684,6 +698,7 @@ RE.editor.on('change', function () {
         }
 
     }
+    window.WreApp.onTextChange(RE.getText())
     window.WreApp.onContentChange(RE.getHtml());
     window.WreApp.onStyleChange(JSON.stringify(items));
 //    console.log(JSON.stringify(items))

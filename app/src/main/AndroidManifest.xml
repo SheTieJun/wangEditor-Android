@@ -32,10 +32,6 @@
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/BaseTheme.MD3" />
 
-        <activity
-            android:name=".activity.ShowArtActivity"
-            android:theme="@style/BaseTheme.MD3"
-            />
     </application>
 
 </manifest>
