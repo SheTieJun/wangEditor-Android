@@ -638,7 +638,7 @@ RE.editor.on('change', function () {
             items.push(item);
         }
 
-        if (type == 'pre' && fragment[0] != null) {
+        if (type == 'pre' && fragment[0].children[0] != null) {
             if (fragment[0].children[0].type == 'code') {
                 var item = {
                     type: 'Code',
