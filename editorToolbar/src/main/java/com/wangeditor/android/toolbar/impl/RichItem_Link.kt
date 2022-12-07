@@ -23,21 +23,31 @@
  */
 package com.wangeditor.android.toolbar.impl
 
+import android.app.Activity
+import android.content.DialogInterface
+import android.text.TextUtils
 import android.view.View
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout.LayoutParams
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AlertDialog.Builder
 import androidx.core.view.setPadding
+import com.google.android.material.textfield.TextInputLayout
 import com.wangeditor.android.RichType
 import com.wangeditor.android.toolbar.IRichItem
 import com.wangeditor.android.toolbar.R
 
 class RichItem_Link : IRichItem() {
+
+    private var dialog: AlertDialog?= null
+
     override fun getType(): String {
         return RichType.Link.name
     }
 
     override fun onClick() {
-        mWangEditor?.insertLink("https://baidu.com", "链接百度")
+        openLinkDialog()
     }
 
     override fun buildView(): View {
@@ -47,4 +57,29 @@ class RichItem_Link : IRichItem() {
             setImageResource(R.drawable.note_icon_link)
         }
     }
+
+    private fun openLinkDialog() {
+        if (dialog == null){
+            val activity = getItemView().context as Activity
+            val builder = Builder(activity)
+            val layoutInflater = activity.layoutInflater
+            val areInsertLinkView: View = layoutInflater.inflate(R.layout.editor_link_insert, null)
+            builder.setView(areInsertLinkView) // Add the buttons
+                .setPositiveButton(R.string.ok, DialogInterface.OnClickListener { dialog, id ->
+                    val editText = areInsertLinkView.findViewById<View>(R.id.insert_link_edit) as TextInputLayout
+                    val url = editText.editText?.text.toString()
+                    if (TextUtils.isEmpty(url)) {
+                        dialog.dismiss()
+                        return@OnClickListener
+                    }
+                    mWangEditor?.insertLink(url, "链接地址")
+                })
+            builder.setNegativeButton(
+                R. string.cancel
+            ) { dialog, _ -> dialog.dismiss() }
+            dialog = builder.create()
+        }
+        dialog?.show()
+    }
+
 }

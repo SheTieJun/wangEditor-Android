@@ -28,7 +28,9 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
+import androidx.activity.ComponentActivity
 import com.wangeditor.android.RichType
+import com.wangeditor.android.RichUtils
 import com.wangeditor.android.StyleItem
 import com.wangeditor.android.WangRichEditor
 import com.wangeditor.android.WangRichEditor.OnDecorationStateListener
@@ -69,6 +71,9 @@ open class RichEditorToolbar @JvmOverloads constructor(
     fun setEditor(editor: WangRichEditor) {
         this.mEditor = editor
         editor.addOnDecorationChangeListener(this)
+        if (editor.context is ComponentActivity){
+            initKeyboardChange(editor.context as ComponentActivity)
+        }
     }
 
     fun addItem(item: IRichItem) {
@@ -147,6 +152,18 @@ open class RichEditorToolbar @JvmOverloads constructor(
             if (item is AbRichItem_Media) {
                 item.setMediaStrategy(mediaStrategy)
             }
+        }
+    }
+
+    /**
+     * 添加键盘监听
+     * @param activity
+     */
+    open fun initKeyboardChange(activity: ComponentActivity) {
+        RichUtils.initKeyboard(activity, {
+            onKeyboardHide()
+        }) {
+            onKeyboardShow()
         }
     }
 

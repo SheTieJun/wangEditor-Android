@@ -29,7 +29,7 @@ import android.text.TextUtils
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.Window
-import androidx.fragment.app.FragmentActivity
+import androidx.activity.ComponentActivity
 import androidx.lifecycle.Lifecycle.Event
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -88,7 +88,7 @@ object RichUtils {
     }
 
     @JvmStatic
-    fun initKeyboard(activity: FragmentActivity, onKeyboardHide: () -> Unit, onKeyboardShow: () -> Unit) {
+    fun initKeyboard(activity: ComponentActivity, onKeyboardHide: () -> Unit, onKeyboardShow: () -> Unit) {
         val mLayoutDelay = 0
         var mPreviousKeyboardHeight = 0
         var mKeyboardHeight = 0

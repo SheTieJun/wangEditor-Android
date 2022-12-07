@@ -54,6 +54,9 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
     defStyleAttr: Int
 ) : WebView(context, attrs, defStyleAttr), IEditorWeb {
 
+
+    val padding = intArrayOf(0,0,0,0)
+
     interface OnContentChangeListener {
         fun onContentChange(html: String?)
     }
@@ -191,6 +194,10 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
      */
     override fun setPadding(left: Int, top: Int, right: Int, bottom: Int) {
 //        super.setPadding(left, top, right, bottom)
+        padding[0] = left
+        padding[1] = top
+        padding[2] = right
+        padding[3] = bottom
         exec(
             "javascript:RE.setPadding('" + left + "px', '" + top + "px', '" + right + "px', '" + bottom +
                 "px');"
@@ -402,12 +409,19 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
         exec("javascript:RE.insertVideo('$url','$thumbURL');")
     }
 
+    /**
+     * 手机用dp 就好
+     */
     fun insertVideo(url: String, thumbURL: String = "", width: Int) {
-        exec("javascript:RE.insertVideoW('$url','$thumbURL', '${width}px');")
+//        val relWidth = Utils.px2dp(width.toFloat()) - padding[0] - padding[2]
+        exec("javascript:RE.insertVideoW('$url','$thumbURL', '${width}');")
     }
 
+    /**
+     * 手机用dp 就好
+     */
     fun insertVideo(url: String, thumbURL: String = "", width: Int, height: Int) {
-        exec("javascript:RE.insertVideoWH('$url', '$thumbURL', '${width}px', '${height}px');")
+        exec("javascript:RE.insertVideoWH('$url', '$thumbURL', '${width}', '${height}');")
     }
 
     fun insertAudio(url: String) {

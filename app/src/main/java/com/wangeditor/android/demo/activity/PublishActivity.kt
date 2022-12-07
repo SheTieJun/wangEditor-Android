@@ -154,7 +154,12 @@ class PublishActivity : BaseBindingActivity<ActivityPublishBinding, PublishViewM
         mViewBinding.editToolbar.setMediaStrategy(object : MediaStrategy {
             override fun startSelectMedia(iRichItem: AbRichItem_Media) {
                 when (iRichItem.getType()) {
-                    RichType.Video.name, RichType.Image.name -> {
+                    RichType.Video.name -> {
+                        val url =
+                            "http://200024424.vod.myqcloud.com/200024424_709ae516bdf811e6ad39991f76a4df69.f20.mp4"
+                        iRichItem.insertMedia(url)
+                    }
+                    RichType.Image.name -> {
                         selectFile(type = iRichItem.getMimeType()) {
                             it?.let {
                                 //我这里只是测试，如果是真实环境请不要这样使用，请使用上传后的文件

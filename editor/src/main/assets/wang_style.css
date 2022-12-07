@@ -670,9 +670,10 @@ body .w-e-modal * {
   background-size: 20px 20px;
   border: 1px dashed var(--w-e-textarea-border-color);
   border-radius: 5px;
-  margin: 10px auto 0;
-  padding: 10px 0;
-  text-align: center
+  margin: 10px 0;
+  padding: 5px 0;
+  text-align: center;
+  max-width:100%
 }
 
 .w-e-text-container [data-slate-editor] pre>code {

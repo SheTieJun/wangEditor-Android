@@ -280,7 +280,7 @@ RE.setJustifyRight = function () {
 }
 
 
-RE.insertImageBase64 = function(image){
+RE.insertImageBase64 = function (image) {
     RE.reFocus();
     var image = {
         type: 'image',
@@ -342,16 +342,14 @@ RE.insertImageWH = function (url, alt, width, height) {
     RE.editor.insertNode(image)
 }
 
-RE.insertVideo = function (url,thumbURL) {
+RE.insertVideo = function (url, thumbURL) {
+    var iUrl =  '<iframe width="100%" height="auto"  src="' + url + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="true"></iframe><br>'
     RE.reFocus()
     var video = {
         type: 'video',
-        poster:thumbURL,
-        src: url,
-        style: {
-            width: 'auto',
-            height: 'auto'
-        },
+        poster: thumbURL,
+        src: iUrl,
+        width: "100%",
         children: [{
             text: ''
         }]
@@ -359,15 +357,13 @@ RE.insertVideo = function (url,thumbURL) {
     RE.editor.insertNode(video)
 }
 
-RE.insertVideoW = function (url,thumbURL, width) {
+RE.insertVideoW = function (url, thumbURL, width) {
     RE.reFocus()
     var video = {
         type: 'video',
         poster:thumbURL,
         src: url,
-        style: {
-            width: width
-        },
+        width: width,
         children: [{
             text: ''
         }]
@@ -375,16 +371,14 @@ RE.insertVideoW = function (url,thumbURL, width) {
     RE.editor.insertNode(video)
 }
 
-RE.insertVideoWH = function (url,thumbURL, width, height) {
+RE.insertVideoWH = function (url, thumbURL, width, height) {
     RE.reFocus()
     var video = {
         type: 'video',
-        poster:thumbURL,
+        poster: thumbURL,
         src: url,
-        style: {
-            width: width,
-            height: height
-        },
+        width: width,
+        height: height,
         children: [{
             text: ''
         }]
@@ -431,13 +425,6 @@ RE.setTodo = function (text) {
     })
 }
 
-RE.setTodo = function (text) {
-    var active = !!DomEditor.getSelectedNodeByType(editor, 'todo')
-    SlateTransforms.setNodes(editor, {
-        type: active ? 'paragraph' : 'todo'
-    })
-}
-
 RE.setDivider = function () {
     var elem = {
         type: 'divider',
@@ -465,30 +452,30 @@ RE.reFocus = function () {
 
 //清除选中的格式
 RE.removeFormat = function () {
-       // 获取所有 text node
-       const nodeEntries = SlateEditor.nodes(editor, {
-         match: n => SlateText.isText(n),
-         universal: true,
-       })
-       for (const nodeEntry of nodeEntries) {
-         // 单个 text node
-         const n = nodeEntry[0]
-         RE.removeMarks(editor, n)
-       }
+    // 获取所有 text node
+    const nodeEntries = SlateEditor.nodes(editor, {
+        match: n => SlateText.isText(n),
+        universal: true,
+    })
+    for (const nodeEntry of nodeEntries) {
+        // 单个 text node
+        const n = nodeEntry[0]
+        RE.removeMarks(editor, n)
+    }
 }
 
 
-RE.removeMarks = function(editor, textNode) {
-  // 遍历 text node 属性，清除样式
-  const keys = Object.keys(textNode);
-  keys.forEach(key => {
-    if (key === 'text') {
-      // 保留 text 属性，text node 必须的
-      return
-    }
-    // 其他属性，全部清除
-     RE.editor.removeMark(key)
-  })
+RE.removeMarks = function (editor, textNode) {
+    // 遍历 text node 属性，清除样式
+    const keys = Object.keys(textNode);
+    keys.forEach(key => {
+        if (key === 'text') {
+            // 保留 text 属性，text node 必须的
+            return
+        }
+        // 其他属性，全部清除
+        RE.editor.removeMark(key)
+    })
 }
 
 RE.editor.on('change', function () {
@@ -539,7 +526,7 @@ RE.editor.on('change', function () {
         items.push(item);
     }
     if (editStyle.bgColor != null) {
-  
+
         var item = {
             type: 'TextBgColor',
             value: editStyle.bgColor
@@ -701,7 +688,7 @@ RE.editor.on('change', function () {
     window.WreApp.onTextChange(RE.getText())
     window.WreApp.onContentChange(RE.getHtml());
     window.WreApp.onStyleChange(JSON.stringify(items));
-//    console.log(JSON.stringify(items))
-//    console.log(editStyle)
+    //    console.log(JSON.stringify(items))
+    //    console.log(editStyle)
     // console.log(fragment)
 })

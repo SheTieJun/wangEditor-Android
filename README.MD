@@ -19,7 +19,7 @@
 - [X] Blockquote 
 - [X] Insert Code : 如果是设置选择文本使用code，会清除其他内容，只保留文本
 - [X] Insert Image
-- [X] Insert Video
+- [X] Insert Video: Editor 插入video节点不支持width ='100%'(这是bug)，暂时用iframe播放代替,让他可以正常的播放
 - [X] Insert Link
 - [x] Checkbox：【Todo】
 - [X] Text Color
@@ -90,6 +90,11 @@ editor.setEditorBackgroundColor(Color.BLUE);
 
 ``` 
 editor.setPadding(10, 10, 10, 10); //android dp = html px
+```
+
+### 预览模式和编辑模式切换
+``` 
+mViewBinding.richEditor.setInputEnabled(enable) //是否编辑状态
 ```
 
 ## 键盘监听
