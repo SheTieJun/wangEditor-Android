@@ -55,7 +55,7 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
 ) : WebView(context, attrs, defStyleAttr), IEditorWeb {
 
 
-    val padding = intArrayOf(0,0,0,0)
+    val padding = intArrayOf(0, 0, 0, 0)
 
     interface OnContentChangeListener {
         fun onContentChange(html: String?)
@@ -102,7 +102,7 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
 
     private fun addOnLayoutChangeUpdateHeight() {
         addOnLayoutChangeListener { v: View?, left: Int, top: Int, right: Int,
-            bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int ->
+                                    bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int ->
             val dp = Utils.px2dp(height.toFloat())
             if (dp == 0) return@addOnLayoutChangeListener
             setEditorHeight(dp)
@@ -200,7 +200,7 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
         padding[3] = bottom
         exec(
             "javascript:RE.setPadding('" + left + "px', '" + top + "px', '" + right + "px', '" + bottom +
-                "px');"
+                    "px');"
         )
     }
 
@@ -364,8 +364,8 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
      */
     fun insertImageBase64(url: String) {
         kotlin.runCatching {
-            if (!File(url).exists()){
-                Log.e("WangEditor","insertImageBase64 only support local file")
+            if (!File(url).exists()) {
+                Log.e("WangEditor", "insertImageBase64 only support local file")
                 return
             }
             val base64 = Utils.toBase64(decodeFile(url))
@@ -520,30 +520,28 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
         @Suppress("DEPRECATION")
         @Deprecated("Deprecated in Java")
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-            val decode = Uri.decode(url)
-            Utils.logInfo(decode)
-            if (url.startsWith("http")) {
+            kotlin.runCatching {
+                val decode = Uri.decode(url)
+                Utils.logInfo(decode)
                 val intent = Intent()
                 intent.action = "android.intent.action.VIEW"
                 intent.data = Uri.parse(url)
                 startActivity(context, intent, null)
-                return true
             }
-            return super.shouldOverrideUrlLoading(view, url)
+            return true
         }
 
         override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-            val url = request.url.toString()
-            val decode = Uri.decode(url)
-            Utils.logInfo(decode)
-            if (url.startsWith("http")) {
+            kotlin.runCatching {
+                val url = request.url.toString()
+                val decode = Uri.decode(url)
+                Utils.logInfo(decode)
                 val intent = Intent()
                 intent.action = "android.intent.action.VIEW"
                 intent.data = Uri.parse(url)
                 startActivity(context, intent, null)
-                return true
             }
-            return super.shouldOverrideUrlLoading(view, url)
+            return true
         }
     }
 

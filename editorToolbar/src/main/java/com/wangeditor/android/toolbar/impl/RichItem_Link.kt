@@ -40,7 +40,7 @@ import com.wangeditor.android.toolbar.R
 
 class RichItem_Link : IRichItem() {
 
-    private var dialog: AlertDialog?= null
+    private var dialog: AlertDialog? = null
 
     override fun getType(): String {
         return RichType.Link.name
@@ -59,7 +59,7 @@ class RichItem_Link : IRichItem() {
     }
 
     private fun openLinkDialog() {
-        if (dialog == null){
+        if (dialog == null) {
             val activity = getItemView().context as Activity
             val builder = Builder(activity)
             val layoutInflater = activity.layoutInflater
@@ -72,11 +72,15 @@ class RichItem_Link : IRichItem() {
                         dialog.dismiss()
                         return@OnClickListener
                     }
-                    mWangEditor?.insertLink(url, "链接地址")
+                    if (url.indexOf("://") < 0) {
+                        mWangEditor?.insertLink("https://$url", "链接地址")
+                    } else {
+                        mWangEditor?.insertLink(url, "链接地址")
+                    }
                     editText.editText?.setText("")
                 })
             builder.setNegativeButton(
-                R. string.cancel
+                R.string.cancel
             ) { dialog, _ -> dialog.dismiss() }
             dialog = builder.create()
         }
