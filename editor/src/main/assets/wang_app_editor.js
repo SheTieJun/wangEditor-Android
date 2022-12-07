@@ -357,6 +357,21 @@ RE.insertVideo = function (url, thumbURL) {
     RE.editor.insertNode(video)
 }
 
+//使用容器的宽度进行放入视频，这是因为当前的wangEditor有bug,无法设置100%
+RE.insertVideoUseWidth = function (url, thumbURL) {
+    RE.reFocus()
+    var video = {
+        type: 'video',
+        poster: thumbURL,
+        src: url,
+        width: RE.editor.getEditableContainer().clientWidth,
+        children: [{
+            text: ''
+        }]
+    };
+    RE.editor.insertNode(video)
+}
+
 RE.insertVideoW = function (url, thumbURL, width) {
     RE.reFocus()
     var video = {

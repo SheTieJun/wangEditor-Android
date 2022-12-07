@@ -20,7 +20,7 @@
 - [X] Insert Code : 如果是设置选择文本使用code，会清除其他内容，只保留文本
 - [X] Insert Image
 - [X] Insert Video: Editor 插入video节点不支持width ='100%'(这是bug)，暂时用iframe播放代替,让他可以正常的播放
-- [X] Insert Link
+- [X] Insert Link: 给选择文字添加链接，如果没有选择文字默认‘链接地址’4个字
 - [x] Checkbox：【Todo】
 - [X] Text Color
 - [X] Text Background Color

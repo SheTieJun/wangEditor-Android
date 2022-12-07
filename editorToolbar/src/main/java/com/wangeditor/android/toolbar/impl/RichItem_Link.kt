@@ -64,8 +64,8 @@ class RichItem_Link : IRichItem() {
             val builder = Builder(activity)
             val layoutInflater = activity.layoutInflater
             val areInsertLinkView: View = layoutInflater.inflate(R.layout.editor_link_insert, null)
-            builder.setView(areInsertLinkView) // Add the buttons
-                .setPositiveButton(R.string.ok, DialogInterface.OnClickListener { dialog, id ->
+            builder.setView(areInsertLinkView)
+                .setPositiveButton(R.string.ok, DialogInterface.OnClickListener { dialog, _ ->
                     val editText = areInsertLinkView.findViewById<View>(R.id.insert_link_edit) as TextInputLayout
                     val url = editText.editText?.text.toString()
                     if (TextUtils.isEmpty(url)) {
@@ -73,6 +73,7 @@ class RichItem_Link : IRichItem() {
                         return@OnClickListener
                     }
                     mWangEditor?.insertLink(url, "链接地址")
+                    editText.editText?.setText("")
                 })
             builder.setNegativeButton(
                 R. string.cancel

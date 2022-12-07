@@ -410,6 +410,13 @@ open class WangRichEditor @SuppressLint("SetJavaScriptEnabled") constructor(
     }
 
     /**
+     * 使用容器的宽度，建议只用于本地的应用
+     */
+    fun insertVideoUseWidth(url: String, thumbURL: String = "") {
+        exec("javascript:RE.insertVideoUseWidth('$url','$thumbURL');")
+    }
+
+    /**
      * 手机用dp 就好
      */
     fun insertVideo(url: String, thumbURL: String = "", width: Int) {

@@ -47,7 +47,7 @@ class RichItem_Video : AbRichItem_Media() {
             url.startsWith("raw://") ||
             url.startsWith("content://")
         ) {
-            mWangEditor!!.insertVideo(url)
+            mWangEditor!!.insertVideoUseWidth(url)
             return
         }
         if (File(url).exists()) {
