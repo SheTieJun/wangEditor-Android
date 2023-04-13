@@ -30,9 +30,10 @@ import me.shetj.base.ktx.selectFile
 import me.shetj.base.ktx.setAppearance
 import me.shetj.base.ktx.showToast
 import me.shetj.base.ktx.start
-import me.shetj.base.mvvm.BaseBindingActivity
+import me.shetj.base.mvvm.viewbind.BaseBindingActivity
 import me.shetj.base.tip.TipKit
 import me.shetj.base.tools.app.KeyboardUtil
+
 
 class PublishActivity : BaseBindingActivity<ActivityPublishBinding, PublishViewModel>(), OnClickListener {
 
@@ -58,74 +59,74 @@ class PublishActivity : BaseBindingActivity<ActivityPublishBinding, PublishViewM
             launch {
                 mViewModel.getSaveInfo(saveKey).let {
                     mViewModel.currentNote = it.getInfoByJson()
-                    mViewBinding.editName.setText(mViewModel.currentNote?.title)
-                    mViewBinding.richEditor.setHtml(mViewModel.currentNote?.content)
-                    mViewBinding.contentSize.text =
+                    mBinding.editName.setText(mViewModel.currentNote?.title)
+                    mBinding.richEditor.setHtml(mViewModel.currentNote?.content)
+                    mBinding.contentSize.text =
                         "  |  ${RichUtils.returnOnlyText(mViewModel.currentNote?.content ?: "").length} 字"
                 }
             }
         }
         startAutoSave()
-        mViewBinding.richEditor.setInputEnabled(isEnable)
+        mBinding.richEditor.setInputEnabled(isEnable)
         lifecycleScope.launchWhenCreated {
             KeyboardUtil.hideSoftKeyboard(this@PublishActivity)
             mViewModel.enable.observe(this@PublishActivity) {
-                mViewBinding.richEditor.setInputEnabled(it)
-                TransitionManager.endTransitions(mViewBinding.root)
-                TransitionManager.beginDelayedTransition(mViewBinding.root, ChangeBounds())
-                mViewBinding.leoBar.isVisible = it
-                mViewBinding.editName.isFocusable = it
-                mViewBinding.editName.isFocusableInTouchMode = it
-                mViewBinding.editEnable.isVisible = !it
+                mBinding.richEditor.setInputEnabled(it)
+                TransitionManager.endTransitions(mBinding.root)
+                TransitionManager.beginDelayedTransition(mBinding.root, ChangeBounds())
+                mBinding.leoBar.isVisible = it
+                mBinding.editName.isFocusable = it
+                mBinding.editName.isFocusableInTouchMode = it
+                mBinding.editEnable.isVisible = !it
             }
         }
-        mViewBinding.editEnable.setOnClickListener(this@PublishActivity)
+        mBinding.editEnable.setOnClickListener(this@PublishActivity)
     }
 
     private fun initEditor() {
         //输入框背景设置
-        mViewBinding.richEditor.setEditorBackgroundColor(Color.WHITE)
+        mBinding.richEditor.setEditorBackgroundColor(Color.WHITE)
         //输入框文本padding
-        mViewBinding.richEditor.setPadding(20, 0, 20, 0)
+        mBinding.richEditor.setPadding(20, 0, 20, 0)
         //监听键盘，打开键盘的时候滚动选中位置
-        mViewBinding.richEditor.initKeyboardChange(this, onKeyboardHide = {
-            mViewBinding.bottomBar.isVisible = false
-            mViewBinding.editToolbar.onKeyboardHide()
+        mBinding.richEditor.initKeyboardChange(this, onKeyboardHide = {
+            mBinding.bottomBar.isVisible = false
+            mBinding.editToolbar.onKeyboardHide()
         }, onKeyboardShow = {
-            mViewBinding.bottomBar.isVisible = true
-            mViewBinding.editToolbar.onKeyboardShow()
+            mBinding.bottomBar.isVisible = true
+            mBinding.editToolbar.onKeyboardShow()
         })
-        mViewBinding.contentSize.text = "  |  0 字"
+        mBinding.contentSize.text = "  |  0 字"
         initEditorToolbar()
 
-        mViewBinding.richEditor.addOnContentChangeListener(object : OnContentChangeListener {
+        mBinding.richEditor.addOnContentChangeListener(object : OnContentChangeListener {
             override fun onContentChange(html: String?) {
                 mViewModel.updateText(html)
             }
         })
 
-        mViewBinding.richEditor.addOnTextChangeListener(object : OnTextChangeListener {
+        mBinding.richEditor.addOnTextChangeListener(object : OnTextChangeListener {
             override fun onTextChange(text: String?) {
                 launch {
-                    mViewBinding.contentSize.text = "  |  ${text?.length ?: 0} 字"
-                    val titleIsEmpty = TextUtils.isEmpty(mViewBinding.editName.text.toString().trim { it <= ' ' })
+                    mBinding.contentSize.text = "  |  ${text?.length ?: 0} 字"
+                    val titleIsEmpty = TextUtils.isEmpty(mBinding.editName.text.toString().trim { it <= ' ' })
                     val empty = text.isNullOrEmpty()
-                    mViewBinding.txtPublish.isSelected = !empty && !titleIsEmpty
-                    mViewBinding.txtPublish.isEnabled = !empty && !titleIsEmpty
+                    mBinding.txtPublish.isSelected = !empty && !titleIsEmpty
+                    mBinding.txtPublish.isEnabled = !empty && !titleIsEmpty
                 }
             }
         })
 
-        mViewBinding.editName.addTextChangedListener { ed ->
+        mBinding.editName.addTextChangedListener { ed ->
             val title = ed.toString()
             mViewModel.updateTitle(title)
-            val html = mViewBinding.richEditor.getHtml().toString()
+            val html = mBinding.richEditor.getHtml().toString()
             val empty = RichUtils.isEmpty(html)
-            mViewBinding.txtPublish.isSelected = !empty && title.isNotEmpty()
-            mViewBinding.txtPublish.isEnabled = !empty && title.isNotEmpty()
+            mBinding.txtPublish.isSelected = !empty && title.isNotEmpty()
+            mBinding.txtPublish.isEnabled = !empty && title.isNotEmpty()
             if (title.length > 40) {
-                mViewBinding.editName.setText(title.substring(0, 40))
-                mViewBinding.editName.setSelection(mViewBinding.editName.text.length)
+                mBinding.editName.setText(title.substring(0, 40))
+                mBinding.editName.setSelection(mBinding.editName.text.length)
                 TipKit.normal(this, "标题不能超过40个字")
             }
         }
@@ -137,21 +138,21 @@ class PublishActivity : BaseBindingActivity<ActivityPublishBinding, PublishViewM
         launch {
             mViewModel.startAutoSave().collect {
                 if (it < 100) {
-                    mViewBinding.autoSaveTime.text = "${it}s 后自动保存"
+                    mBinding.autoSaveTime.text = "${it}s 后自动保存"
                 } else {
-                    mViewBinding.autoSaveTime.text = "正在保存..."
+                    mBinding.autoSaveTime.text = "正在保存..."
                 }
             }
         }
     }
 
     private fun initEditorToolbar() {
-        mViewBinding.editToolbar.setEditor(mViewBinding.richEditor)
-        mViewBinding.editToolbar.initTextStyle()
-        mViewBinding.editToolbar.initFunStyle()
-        mViewBinding.editToolbar.initMedia()
-        mViewBinding.editToolbar.initParagraphStyle()
-        mViewBinding.editToolbar.setMediaStrategy(object : MediaStrategy {
+        mBinding.editToolbar.setEditor(mBinding.richEditor)
+        mBinding.editToolbar.initTextStyle()
+        mBinding.editToolbar.initFunStyle()
+        mBinding.editToolbar.initMedia()
+        mBinding.editToolbar.initParagraphStyle()
+        mBinding.editToolbar.setMediaStrategy(object : MediaStrategy {
             override fun startSelectMedia(iRichItem: AbRichItem_Media) {
                 when (iRichItem.getType()) {
                     RichType.Video.name -> {
@@ -189,9 +190,9 @@ class PublishActivity : BaseBindingActivity<ActivityPublishBinding, PublishViewM
                 mViewModel.enable.postValue(false)
             }
             id.button_rich_do ->                 //反撤销
-                mViewBinding.richEditor.redo()
+                mBinding.richEditor.redo()
             id.button_rich_undo ->                 //撤销
-                mViewBinding.richEditor.undo()
+                mBinding.richEditor.undo()
             id.edit_enable -> {
                 mViewModel.enable.postValue(true)
             }

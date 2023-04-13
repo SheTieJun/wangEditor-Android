@@ -37,6 +37,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.wangeditor.android.RichType
 import com.wangeditor.android.toolbar.IRichItem
 import com.wangeditor.android.toolbar.R
+import com.wangeditor.android.toolbar.R.string
 
 class RichItem_Link : IRichItem() {
 
@@ -73,9 +74,9 @@ class RichItem_Link : IRichItem() {
                         return@OnClickListener
                     }
                     if (url.indexOf("://") < 0) {
-                        mWangEditor?.insertLink("https://$url", "链接地址")
+                        mWangEditor?.insertLink("https://$url", getItemView().context.getString(string.link_title))
                     } else {
-                        mWangEditor?.insertLink(url, "链接地址")
+                        mWangEditor?.insertLink(url, getItemView().context.getString(string.link_title))
                     }
                     editText.editText?.setText("")
                 })

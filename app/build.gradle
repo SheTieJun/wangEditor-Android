@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace 'com.wangeditor.android.demo'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.wangeditor.android"
         minSdk 24
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -52,7 +52,7 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    implementation 'com.github.SheTieJun:BaseKit:542791b2cf'
+    implementation 'com.github.SheTieJun:BaseKit:cbe5e5f747'
     implementation project(path: ':editor')
     implementation project(path: ':editorToolbar')
 }

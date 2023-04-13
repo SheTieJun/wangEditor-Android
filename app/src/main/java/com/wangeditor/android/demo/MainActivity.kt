@@ -11,7 +11,7 @@ import com.wangeditor.android.demo.model.Note
 import com.wangeditor.android.demo.viewmodel.MainViewModel
 import me.shetj.base.ktx.launch
 import me.shetj.base.ktx.setAppearance
-import me.shetj.base.mvvm.BaseBindingActivity
+import me.shetj.base.mvvm.viewbind.BaseBindingActivity
 
 class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), OnClickListener {
 
@@ -20,9 +20,8 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
         super.initView()
         setAppearance(true, Color.WHITE)
         Utils.isDebug(true)
-        mViewBinding.create.setOnClickListener(this)
-
-        mViewBinding.recycleView.adapter = mAdapter
+        mBinding.create.setOnClickListener(this)
+        mBinding.recycleView.adapter = mAdapter
         mAdapter.setOnItemClickListener { _, _, position ->
             PublishActivity.start(this, mAdapter.getItem(position).saver?.keyName,false)
         }

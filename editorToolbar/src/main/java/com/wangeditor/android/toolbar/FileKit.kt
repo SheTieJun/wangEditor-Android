@@ -261,7 +261,7 @@ object FileKit {
                 MimeTypeMap.getSingleton()
                     .getExtensionFromMimeType(contentResolver.getType(uri))
                 }"
-            }
+            }.replace("/", "_")
             val ios = contentResolver.openInputStream(uri)
             if (ios != null) {
                 File("${context.cacheDir.absolutePath}/$displayName")

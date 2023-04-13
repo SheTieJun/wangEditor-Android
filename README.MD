@@ -6,39 +6,39 @@
 
 ## 支持的功能 Supported Functions
 
-- [X] Bold
-- [X] Italic
-- [X] Subscript
-- [X] Superscript
-- [X] Strikethrough
-- [X] Underline
-- [X] Justify Left/ Justify Center / Justify Right
-- [X] Heading 1、2、3 、4、5、6
-- [X] Undo/Redo
-- [X] Indent/Outdent
-- [X] Blockquote 
-- [X] Insert Code : 如果是设置选择文本使用code，会清除其他内容，只保留文本
-- [X] Insert Image
-- [X] Insert Video: Editor 插入video节点不支持width ='100%'(这是bug)，暂时用iframe播放代替,让他可以正常的播放
-- [X] Insert Link: 给选择文字添加链接，如果没有选择文字默认‘链接地址’4个字
+- [X] Bold ：加粗
+- [X] Italic ：斜体
+- [X] Subscript ： 下标
+- [X] Superscript： 商标
+- [X] Strikethrough： 删除线
+- [X] Underline： 下划线
+- [X] Justify Left/ Justify Center / Justify Right：左对齐/居中对齐/右对齐
+- [X] Heading 1、2、3 、4、5、6 ：H1~h6
+- [X] Undo/Redo: 回撤/取消回撤
+- [X] Indent/Outdent :缩进/取消缩进
+- [X] Blockquote ：引用
+- [X] Insert Code : 高亮代码块，如果是设置选择文本使用code，会清除其他内容，只保留文本
+- [X] Insert Image：插入图片
+- [X] Insert Video: 插入视频，Editor 插入video节点不支持width ='100%'(这是bug)，暂时用iframe播放代替,让他可以正常的播放
+- [X] Insert Link:插入链接， 给选择文字添加链接，如果没有选择文字默认‘链接地址’4个字
 - [x] Checkbox：【Todo】
-- [X] Text Color
-- [X] Text Background Color
-- [X] Text Font Size
-- [X] Unordered List (Bullets)
-- [X] Ordered List (Numbers)
-- [X] Cursor Color 光标颜色 ，和 Android光标下的小圆点按钮颜色是通过主题修改的
-- [X] removeFormat :清除选中文本的格式，不可以清除heading
-- [ ] Insert Audio : 编辑器不支持~，如果有会js的人可以扩展一下
+- [X] Text Color ：文字颜色
+- [X] Text Background Color：文字背景颜色
+- [X] Text Font Size : 文字大小
+- [X] Unordered List (Bullets) ：无序号排序
+- [X] Ordered List (Numbers)： 有需要排序
+- [X] Cursor Color： 光标颜色 ， 小圆点按钮：小圆点按钮颜色是通过Android主题修改的
+- [X] removeFormat : 清除选中文本的格式，不可以清除heading
+- [ ] Insert Audio : 编辑器不支持~，但是可以扩展一下，[定义新元素](https://www.wangeditor.com/v5/development.html#%E5%AE%9A%E4%B9%89%E6%96%B0%E5%85%83%E7%B4%A0)
 - [ ] Table :编辑器支持，后面可以看情况加入，感觉手机上可能用不到
 
 
 ## Demo APK [下载地址](https://hey.scandown.com/vqu2)
 
-|                        |                           |
-|------------------------|---------------------------|
-| ![](image/颜色修改.webp)   | ![](image/heading修改.webp) |
-| ![](image/字体大小修改.webp) | ![](image/demo样式.webp)    |
+|                        | |                          |        |
+|------------------------|-|----------------------|-------|
+| ![](image/颜色修改.webp)   |-| ![](image/heading修改.webp) |-|
+| ![](image/字体大小修改.webp) |-| ![](image/demo样式.webp)    |-|
 
 
 ## 接入项目
@@ -154,16 +154,13 @@ editToolbar.initMedia()
 
 3. 为什么使用`wangEditor`，  这是考虑多端处理的结果，其中web端使用了`wangEditor`项目进行开发的，我尝试移植后发现也可以使用，这样可以保证相同的格式处理问题。
 
-4. wangEditor`功能很全，但是我只懂皮毛的`js`和`html`，所以我这里只用到**部分**的功能，也有一些功能被我移除了,我用的是`simple
+4. `wangEditor`功能很全，但是我只懂皮毛的`js`和`html`，所以我这里只用到**部分**的功能，还有部分功能被我移除了,我用的是`simple`
 
-5. > mode: 'default' 默认模式 - 集成了`wangEditor`所有功能
-   >
-   > mode: 'simple' 简洁模式 - 仅有部分常见功能，但更加简洁易用
-
-6. > 缺点：`wang_editor_index.js`体积太大，功能内容太多，已我的知识储备无法进行优化简化,同时不支持低版本chrome
+5. > 缺点：`wang_editor_index.js`体积太大，功能内容太多，已我的知识储备无法进行优化简化,同时不支持低版本chrome
    >
    > 优化：`wangEditor`功能齐全强大，后续可以功能同步web
 
+6. 大图不要用base64插入，否则会很卡顿
 
 ## 相关API
 
