@@ -7,11 +7,13 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
 import android.view.View.OnClickListener
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.ChangeBounds
 import androidx.transition.TransitionManager
+import com.android.cling.ClingDLNAManager
 import com.wangeditor.android.RichType
 import com.wangeditor.android.RichUtils
 import com.wangeditor.android.WangRichEditor.OnContentChangeListener
@@ -25,7 +27,9 @@ import com.wangeditor.android.toolbar.initFunStyle
 import com.wangeditor.android.toolbar.initMedia
 import com.wangeditor.android.toolbar.initParagraphStyle
 import com.wangeditor.android.toolbar.initTextStyle
+import kotlinx.coroutines.launch
 import me.shetj.base.ktx.launch
+import me.shetj.base.ktx.pickVisualMedia
 import me.shetj.base.ktx.selectFile
 import me.shetj.base.ktx.setAppearance
 import me.shetj.base.ktx.showToast
@@ -33,6 +37,7 @@ import me.shetj.base.ktx.start
 import me.shetj.base.mvvm.viewbind.BaseBindingActivity
 import me.shetj.base.tip.TipKit
 import me.shetj.base.tools.app.KeyboardUtil
+import me.shetj.base.tools.file.FileQUtils
 
 
 class PublishActivity : BaseBindingActivity<ActivityPublishBinding, PublishViewModel>(), OnClickListener {
@@ -68,7 +73,7 @@ class PublishActivity : BaseBindingActivity<ActivityPublishBinding, PublishViewM
         }
         startAutoSave()
         mBinding.richEditor.setInputEnabled(isEnable)
-        lifecycleScope.launchWhenCreated {
+        lifecycleScope.launch {
             KeyboardUtil.hideSoftKeyboard(this@PublishActivity)
             mViewModel.enable.observe(this@PublishActivity) {
                 mBinding.richEditor.setInputEnabled(it)
@@ -156,18 +161,18 @@ class PublishActivity : BaseBindingActivity<ActivityPublishBinding, PublishViewM
             override fun startSelectMedia(iRichItem: AbRichItem_Media) {
                 when (iRichItem.getType()) {
                     RichType.Video.name -> {
-                        val url =
-                            "http://200024424.vod.myqcloud.com/200024424_709ae516bdf811e6ad39991f76a4df69.f20.mp4"
-                        iRichItem.insertMedia(url)
+                        pickVisualMedia(ActivityResultContracts.PickVisualMedia.VideoOnly) {
+                            if (it == null) return@pickVisualMedia
+                            val video = ClingDLNAManager.getBaseUrl(this@PublishActivity) + FileQUtils.getFileAbsolutePath(this@PublishActivity, it)
+                            iRichItem.insertMedia(video)
+                        }
                     }
+
                     RichType.Image.name -> {
                         selectFile(type = iRichItem.getMimeType()) {
                             it?.let {
-                                //我这里只是测试，如果是真实环境请不要这样使用，请使用上传后的文件
-                                //content的地址只是临时的
-                                //base64 大图会非常的卡顿
-                                iRichItem.insertMedia(it.toString())
-                                "这里的资源访问地址是临时地址".showToast()
+                                val image = ClingDLNAManager.getBaseUrl(this@PublishActivity) + FileQUtils.getFileAbsolutePath(this@PublishActivity, it)
+                                iRichItem.insertMedia(image)
                             }
                         }
                     }

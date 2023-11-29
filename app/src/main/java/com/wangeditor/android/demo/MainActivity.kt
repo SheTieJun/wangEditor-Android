@@ -3,6 +3,7 @@ package com.wangeditor.android.demo
 import android.graphics.Color
 import android.view.View
 import android.view.View.OnClickListener
+import com.android.cling.ClingDLNAManager
 import com.wangeditor.android.Utils
 import com.wangeditor.android.demo.activity.PublishActivity
 import com.wangeditor.android.demo.adapter.NoteAdapter
@@ -16,8 +17,8 @@ import me.shetj.base.mvvm.viewbind.BaseBindingActivity
 class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), OnClickListener {
 
     private val mAdapter = NoteAdapter(null,lifecycle)
-    override fun initView() {
-        super.initView()
+    override fun initBaseView() {
+        super.initBaseView()
         setAppearance(true, Color.WHITE)
         Utils.isDebug(true)
         mBinding.create.setOnClickListener(this)
@@ -25,11 +26,10 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
         mAdapter.setOnItemClickListener { _, _, position ->
             PublishActivity.start(this, mAdapter.getItem(position).saver?.keyName,false)
         }
-
+        ClingDLNAManager.startLocalFileService(this)
     }
 
-    override fun initData() {
-        super.initData()
+    override fun addObservers() {
         launch {
             mViewModel.getNoteList().collect {
                 it.mapNotNull {

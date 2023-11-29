@@ -1,10 +1,16 @@
 apply plugin: 'maven-publish'
 
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    archiveClassifier = "sources"
+}
+
 afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
                 groupId "com.github.shetiejun"
+                artifact sourceJar
                 from components.release
                 artifactId = "rich_editor"
                 version = '0.0.0'

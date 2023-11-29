@@ -14,6 +14,10 @@ dependencyResolutionManagement {
         maven {
             url "https://maven.mozilla.org/maven2"
         }
+        maven {
+            url 'http://4thline.org/m2'
+            allowInsecureProtocol = true  //支持http
+        }
     }
 }
 rootProject.name = "wangEditor-Android"
