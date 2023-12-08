@@ -2,7 +2,9 @@
 [![](https://jitpack.io/v/SheTieJun/wangEditor-Android.svg)](https://jitpack.io/#SheTieJun/wangEditor-Android)
 ![buildWorkflow](https://github.com/SheTieJun/wangEditor-Android/actions/workflows/android.yml/badge.svg)
 
-基于[**wangEditor**](https://github.com/wangeditor-team/wangEditor) 在Android实现的富文本功能
+基于[**wangEditor**](https://github.com/wangeditor-team/wangEditor) 在Android实现的富文本功能，如果觉得好用可以去给wangEditor点个star
+
+我站在巨人的肩膀上开发的，感谢wangEditor的开发者门
 
 ## 支持的功能 Supported Functions
 
@@ -32,9 +34,10 @@
 - [ ] Insert Audio : 编辑器不支持~，但是可以扩展一下，[定义新元素](https://www.wangeditor.com/v5/development.html#%E5%AE%9A%E4%B9%89%E6%96%B0%E5%85%83%E7%B4%A0)
 - [ ] Table :编辑器支持，后面可以看情况加入，感觉手机上可能用不到
 
+## Demo APK
+![](image/下载地址.png)
 
-## Demo APK [下载地址](https://hey.scandown.com/vqu2)
-
+## 效果图
 |                        | |                          |        |
 |------------------------|-|----------------------|-------|
 | ![](image/颜色修改.webp)   |-| ![](image/heading修改.webp) |-|
@@ -73,11 +76,12 @@ implementation `com.github.SheTieJun.wangEditor-Android:editor_toolbar:Tag`
 editor.setEditorHeight(200);  //dp = html px
 ```
 
-### Font
+### Text
 
 ``` 
-editor.setEditorFontSize(22);  //android dp = html px
-editor.setEditorFontColor(Color.RED);
+editor.setTextBackgroundColor
+editor.setTextFontSize
+editor.setTextColor
 ```
 
 ### Background
@@ -160,7 +164,7 @@ editToolbar.initMedia()
    >
    > 优化：`wangEditor`功能齐全强大，后续可以功能同步web
 
-6. 大图不要用base64插入，否则会很卡顿
+6. **大图不要用base64插入，否则会很卡顿**
 
 ## 相关API
 
