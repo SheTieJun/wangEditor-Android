@@ -26,9 +26,9 @@ package com.wangeditor.android
 enum class RichType {
     Bold, // 加粗
     Italic, // 斜体
-    SubScript,
-    SuperScript,
-    StrikeThrough,
+    SubScript,// 下标
+    SuperScript,// 上标
+    StrikeThrough,// 删除线
     FontSize, // 字体大小
     FontColor, // 字体大小
     TextBgColor, // 背景颜色
@@ -49,10 +49,11 @@ enum class RichType {
     Image, // 图片 image
     Video, // 视频
     Audio, // 音频
+
     BlockQuote, // 引用 blockquote
     Code, // 代码块
     Divider, // 分割线
 
 
-    Unknown,//不需要选中，不需要反选，直接执行对应功能的类型，比如：橡皮擦功能
+    Clear,//橡皮擦功能
 }

@@ -4,7 +4,7 @@
 
 基于[**wangEditor**](https://github.com/wangeditor-team/wangEditor) 在Android实现的富文本功能，如果觉得好用可以去给wangEditor点个star
 
-我站在巨人的肩膀上开发的，感谢wangEditor的开发者门
+我站在巨人的肩膀上开发的，感谢wangEditor的开发者们
 
 ## 支持的功能 Supported Functions
 
@@ -44,7 +44,7 @@
 | ![](image/字体大小修改.webp) |-| ![](image/demo样式.webp)    |-|
 
 
-## 接入项目
+## 一. 富文本编辑器：WangRichEditor
 
 Add it in your root build.gradle at the end of repositories:
 ```
@@ -69,50 +69,26 @@ implementation `com.github.SheTieJun.wangEditor-Android:editor_toolbar:Tag`
         android:layout_height="match_parent"
   />
 ```
-
-### Height
-
-``` 
-editor.setEditorHeight(200);  //dp = html px
-```
-
-### Text
-
-``` 
-editor.setTextBackgroundColor
-editor.setTextFontSize
-editor.setTextColor
-```
-
-### Background
-
-``` 
-editor.setEditorBackgroundColor(Color.BLUE);
-```
-
-### Padding
-
-``` 
-editor.setPadding(10, 10, 10, 10); //android dp = html px
-```
-
 ### 预览模式和编辑模式切换
 ``` 
 mViewBinding.richEditor.setInputEnabled(enable) //是否编辑状态
 ```
 
-## 键盘监听
+### 键盘监听
 
-`initKeyboardChange`，可以自行重写使用
+`editor.initKeyboardChange`，
 
 > 主要是为了修复打开键盘的时候，无法自动滚到选中的位置
+> 可以继承后自行重写使用
 
 默认实现操作：
 
 - 打开键盘时滚动到当前选中位置或者上一次选中的位置
 - 关闭键盘时，清除焦点
 
-## 工具栏实现
+## 二、工具栏实现 RichEditorToolbar
+
+![](image/editor_toolbar.png)
 
 ```XML
 
@@ -124,14 +100,22 @@ mViewBinding.richEditor.setInputEnabled(enable) //是否编辑状态
 
 ```Kotlin
 editToolbar.setEditor(mViewBinding.richEditor)
-editToolbar.initTextStyle()
-editToolbar.initFunStyle()
-editToolbar.initParagraphStyle()
-editToolbar.initMedia()
+editToolbar.initTextStyle() //字体相关
+editToolbar.initFunStyle() //其他功能，格式：如橡皮擦，code,链接、分割线等
+editToolbar.initParagraphStyle() //段落相关
+editToolbar.initMedia() //媒体相关
 ```
 
-1. 可以自己选择添加对应工具，也可以自己自定义item,item的view可以自己决定是Textview/Imageview/ViewGroup
-2. 可以添加多个toolbar 控制一个editor
+1. 可以自己选择添加对应工具，也**可以自己自定义item,item的view可以自己决定是Textview/Imageview/ViewGroup**： `addItem(RichItem_Todo())`
+2. **可以添加多个toolbar 控制一个editor**: `editToolbar.setEditor(mViewBinding.richEditor)`
+
+## 相关API
+
+- 核心文件：[wang_app_editor.js](editor/src/main/assets/wang_app_editor.js): 用于[**wangEditor**](https://github.com/wangeditor-team/wangEditor)和Android交互的核心文件
+- [WangRichEditor相关API](editor/README.MD) 
+- [RichEditorToolbar相关API](editorToolbar/README.MD)
+
+
 
 ## 链接项目
 
@@ -164,67 +148,4 @@ editToolbar.initMedia()
    >
    > 优化：`wangEditor`功能齐全强大，后续可以功能同步web
 
-6. **大图不要用base64插入，否则会很卡顿**
-
-## 相关API
-
-核心文件：[wang_app_editor.js](editor/src/main/assets/wang_app_editor.js)
-
----------
-- disable
-- enable
-- setInputEnabled
----------
-- getHtml
-- setHtml
----------
-- addOnDecorationChangeListener
-- addOnTextChangeListener
-- setOnInitialLoadListener
----------
-- focusEditor
-- clearFocusEditor
----------
-- setEditorBackgroundColor
-- setEditorCursorColor
-- setEditorHeight
-- setEditorHeight
-- setEditorWidth
----------
-- setTextBackgroundColor
-- setTextFontSize
-- setTextColor
----------
-- redo
-- undo
----------
-- setBackgroundColor
-- setBlockquote
-- setBold
-- setStrikeThrough
-- setSubscript
-- setSuperscript
-- setUnderline
-- setItalic
----------
-- setIndent
-- setOutdent
----------
-- setHeading
-- setParagraph
-- setNumbers
-- setBullets
-- setAlignCenter
-- setAlignLeft
-- setAlignRight
----------
-- initKeyboardChange
----------
-- insertAudio
-- insertCode
-- insertDivider
-- insertImage
-- insertLink
-- insertTodo
-- insertVideo
-
+6. **大图不要用Base64插入，否则编辑的时候会很卡顿，因为内部在不停的计算长度，Base64会影响计算**

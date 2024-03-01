@@ -37,7 +37,7 @@ import com.wangeditor.android.toolbar.R
  */
 class RichItem_ClearStyle : IRichItem() {
     override fun getType(): String {
-        return RichType.Unknown.name
+        return RichType.Clear.name
     }
 
     override fun onClick() {

@@ -3,7 +3,7 @@ package com.wangeditor.android.toolbar
 import android.graphics.Color
 
 
-fun getColorInt(colorString: String, mDefValue: Any): Int {
+internal fun getColorInt(colorString: String, mDefValue: Any): Int {
     return runCatching {
         if (colorString.startsWith("#")) {
             Color.parseColor(colorString)

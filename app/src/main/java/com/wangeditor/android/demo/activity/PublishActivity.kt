@@ -163,6 +163,8 @@ class PublishActivity : BaseBindingActivity<ActivityPublishBinding, PublishViewM
                     RichType.Video.name -> {
                         pickVisualMedia(ActivityResultContracts.PickVisualMedia.VideoOnly) {
                             if (it == null) return@pickVisualMedia
+                            //demo是构建本地服务器的url
+                            //正式的时候，应该是上传到服务器，然后返回url
                             val video = ClingDLNAManager.getBaseUrl(this@PublishActivity) + FileQUtils.getFileAbsolutePath(this@PublishActivity, it)
                             iRichItem.insertMedia(video)
                         }
@@ -171,6 +173,8 @@ class PublishActivity : BaseBindingActivity<ActivityPublishBinding, PublishViewM
                     RichType.Image.name -> {
                         selectFile(type = iRichItem.getMimeType()) {
                             it?.let {
+                                //demo是构建本地服务器的url
+                                //正式的时候，应该是上传到服务器，然后返回url
                                 val image = ClingDLNAManager.getBaseUrl(this@PublishActivity) + FileQUtils.getFileAbsolutePath(this@PublishActivity, it)
                                 iRichItem.insertMedia(image)
                             }

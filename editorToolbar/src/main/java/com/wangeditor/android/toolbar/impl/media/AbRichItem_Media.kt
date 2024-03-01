@@ -30,10 +30,6 @@ abstract class AbRichItem_Media : IRichItem() {
 
     private var mMediaStrategy: MediaStrategy? = null
 
-    override fun getType(): String {
-        return RichType.Image.name
-    }
-
     override fun onClick() {
         mMediaStrategy?.startSelectMedia(this)
     }

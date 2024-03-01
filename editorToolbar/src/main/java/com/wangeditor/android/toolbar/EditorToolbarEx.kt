@@ -50,38 +50,38 @@ import com.wangeditor.android.toolbar.impl.media.RichItem_Image
 import com.wangeditor.android.toolbar.impl.media.RichItem_Video
 
 fun RichEditorToolbar.initTextStyle() {
-    addItem(RichItem_Head())
-    addItem(RichItem_Bold())
-    addItem(RichItem_UnderLine())
-    addItem(RichItem_Italic())
-    addItem(RichItem_FontSize())
-    addItem(RichItem_FontColor())
-    addItem(RichItem_TextBgColor())
+    addItem(RichItem_Head())//标题
+    addItem(RichItem_Bold())//加粗
+    addItem(RichItem_UnderLine())//下划线
+    addItem(RichItem_Italic())//斜体
+    addItem(RichItem_FontSize())//字体大小
+    addItem(RichItem_FontColor())//字体颜色
+    addItem(RichItem_TextBgColor())//背景颜色
     addItem(RichItem_Subscript()) // 下标
     addItem(RichItem_Superscript()) // 上标
     addItem(RichItem_StrikeThrough()) // 删除线
 }
 
 fun RichEditorToolbar.initParagraphStyle() {
-    addItem(RichItem_Intdent())
-    addItem(RichItem_BulletList())
-    addItem(RichItem_NumberList())
-    addItem(RichItem_AlignLeft())
-    addItem(RichItem_AlignCenter())
-    addItem(RichItem_AlignRight())
+    addItem(RichItem_Intdent()) //缩进
+    addItem(RichItem_BulletList())//无序列表
+    addItem(RichItem_NumberList())//有序列表
+    addItem(RichItem_AlignLeft())//左对齐
+    addItem(RichItem_AlignCenter())//居中对齐
+    addItem(RichItem_AlignRight())//右对齐
 }
 
 fun RichEditorToolbar.initFunStyle() {
-    addItem(RichItem_ClearStyle())
-    addItem(RichItem_Link())
-    addItem(RichItem_Todo())
-    addItem(RichItem_Code())
-    addItem(RichItem_Divider())
-    addItem(RichItem_BlockQuote())
+    addItem(RichItem_ClearStyle())//清除样式
+    addItem(RichItem_Link())//链接
+    addItem(RichItem_Todo())//Check to do
+    addItem(RichItem_Code())//代码块
+    addItem(RichItem_Divider())//分割线
+    addItem(RichItem_BlockQuote())//引用
 }
 
 fun RichEditorToolbar.initMedia() {
-    addItem(RichItem_Image())
-    addItem(RichItem_Audio())
-    addItem(RichItem_Video())
+    addItem(RichItem_Image())//图片
+    addItem(RichItem_Audio())//音频
+    addItem(RichItem_Video())//视频
 }

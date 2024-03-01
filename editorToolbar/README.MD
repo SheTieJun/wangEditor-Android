@@ -12,5 +12,15 @@
 
 ## Media 媒体文件处理
 1. 建议自己使用上传后的url,使用本地的地址可能存在被删除的情况，并且`content://`类型是会变的
-2. 可以base64，但是稍大一点的图片就会卡顿，暂时没有好的优化条件
+2. 可以base64，但是稍大一点的图片编辑的时候就会卡顿，暂时没有好的优化条件
 ![image/img.png](../image/img.png)
+
+## 默认实现
+
+```Kotlin
+editToolbar.setEditor(mViewBinding.richEditor)
+editToolbar.initTextStyle() //字体相关
+editToolbar.initFunStyle() //其他功能，格式：如橡皮擦，code,链接、分割线等
+editToolbar.initParagraphStyle() //段落相关
+editToolbar.initMedia() //媒体相关
+```
