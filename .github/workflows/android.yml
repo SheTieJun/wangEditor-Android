@@ -29,5 +29,14 @@ jobs:
     - name: Upload to Fir.im
       run: |
         fir login ${{ secrets.FIMTOKEN }}
-    - run: fir publish app/build/outputs/apk/release/app-release.apk
+    - name: Upload to Fir.im
+      id: upload
+      run: |
+        fir login ${{ secrets.FIR_API_TOKEN }}
+        FIR_UPLOAD_OUTPUT=$(fir publish app/build/outputs/apk/release/app-release.apk)
+        echo "::set-output name=log::$(echo "$FIR_UPLOAD_OUTPUT")"
+    - name: Get Download URL
+      run: |
+        DOWNLOAD_URL=$(echo "${{ steps.upload.outputs.log }}" | grep -oP '(?<=Published succeed: ).*')
+        echo "Download URL: $DOWNLOAD_URL"
 
